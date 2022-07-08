@@ -200,6 +200,14 @@ std::string RcppDeepState_string(){
   return rand_string;
 }
 
+//Rcpp string generation
+Rcpp::String RcppDeepState_String(){
+  std::string rand_string;
+  rand_string = DeepState_CStrUpToLen(50,"abcdefghijklmnopqrstuvwxyz");
+  Rcpp::String rand_rcpp_string(rand_string);
+  return rand_rcpp_string;
+}
+
 //default arma::mat generation
 arma::mat RcppDeepState_mat(){
   int rows = DeepState_IntInRange(1,10);
