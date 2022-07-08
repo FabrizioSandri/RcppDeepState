@@ -152,7 +152,7 @@ deepstate_fun_create<-function(package_path,function_name,sep="infun"){
             variable <- paste0("NumericVector ",arg.name,"(1);","\n",indent,arg.name,"[0]")
             primitives <- c(primitives,arg.name)
           }
-          else if(type.arg == "std::string")
+          else if(type.arg == "std::string" || type.arg == "String")
           {
             variable <- paste0("CharacterVector ",arg.name,"(1);","\n",indent,arg.name,"[0]")
             primitives <- c(primitives,arg.name)
@@ -176,7 +176,7 @@ deepstate_fun_create<-function(package_path,function_name,sep="infun"){
       }
       proto_args <- gsub(" ","",paste0(proto_args,arg.name))
       if(argument.i <= nrow(functions.rows)) {
-        if(type.arg == "int" || type.arg == "double" || type.arg == "std::string"){
+        if(type.arg == "int" || type.arg == "double" || type.arg == "std::string" || type.arg == "String"){
           proto_args <- paste0(proto_args,"[0],")
         }else{
           proto_args <- paste0(proto_args,",")  
