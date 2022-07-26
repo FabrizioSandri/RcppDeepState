@@ -5,6 +5,11 @@
 
 using namespace Rcpp;
 
+#ifdef RCPP_USE_GLOBAL_ROSTREAM
+Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
+Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
+#endif
+
 // rcpp_read_out_of_bound
 int rcpp_read_out_of_bound(int rbound);
 RcppExport SEXP _testSAN_rcpp_read_out_of_bound(SEXP rboundSEXP) {
@@ -13,6 +18,17 @@ BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< int >::type rbound(rboundSEXP);
     rcpp_result_gen = Rcpp::wrap(rcpp_read_out_of_bound(rbound));
+    return rcpp_result_gen;
+END_RCPP
+}
+// unsupported_datatype
+int unsupported_datatype(Rcpp::LogicalVector param);
+RcppExport SEXP _testSAN_unsupported_datatype(SEXP paramSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::LogicalVector >::type param(paramSEXP);
+    rcpp_result_gen = Rcpp::wrap(unsupported_datatype(param));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -74,6 +90,7 @@ END_RCPP
 
 static const R_CallMethodDef CallEntries[] = {
     {"_testSAN_rcpp_read_out_of_bound", (DL_FUNC) &_testSAN_rcpp_read_out_of_bound, 1},
+    {"_testSAN_unsupported_datatype", (DL_FUNC) &_testSAN_unsupported_datatype, 1},
     {"_testSAN_rcpp_use_after_deallocate", (DL_FUNC) &_testSAN_rcpp_use_after_deallocate, 1},
     {"_testSAN_rcpp_use_after_free", (DL_FUNC) &_testSAN_rcpp_use_after_free, 1},
     {"_testSAN_rcpp_use_uninitialized", (DL_FUNC) &_testSAN_rcpp_use_uninitialized, 1},

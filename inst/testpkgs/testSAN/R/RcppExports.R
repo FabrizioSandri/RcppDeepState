@@ -5,6 +5,10 @@ rcpp_read_out_of_bound <- function(rbound) {
     .Call('_testSAN_rcpp_read_out_of_bound', PACKAGE = 'testSAN', rbound)
 }
 
+unsupported_datatype <- function(param) {
+    .Call('_testSAN_unsupported_datatype', PACKAGE = 'testSAN', param)
+}
+
 rcpp_use_after_deallocate <- function(array_size) {
     .Call('_testSAN_rcpp_use_after_deallocate', PACKAGE = 'testSAN', array_size)
 }
