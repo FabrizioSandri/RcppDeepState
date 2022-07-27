@@ -83,7 +83,7 @@ deepstate_fuzz_fun_analyze<- function(test_function,seed=-1, time.limit.seconds,
   log_file <- file.path(output_folder,paste0(seed,"_log"))
   valgrind.log.text <- file.path(output_folder,"seed_valgrind_log_text")
   if(!file.exists(test_harness.o)){
-    deepstate_compile_fun(test_function, verbose)
+    deepstate_compile_fun(test_function, verbose=verbose)
   }
   if(time.limit.seconds <= 0){
     stop("time.limit.seconds should always be greater than zero")
