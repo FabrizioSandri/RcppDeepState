@@ -3,7 +3,7 @@ library(RcppDeepState)
 testSAN_path <- system.file("testpkgs/testSAN", package = "RcppDeepState")
 
 
-test_that("Check debug symbols", {
+test_that("Test on the testSAN package", {
     
     # We choose seed=1000 since it has been demonstrated locally that 
     # RcppDeepState detects several issues when using this number.     
@@ -14,6 +14,8 @@ test_that("Check debug symbols", {
     # If debug symbols are included in the final binary, then the resulting 
     # table will contain some information. On the other hand, if the resulting 
     # table is empty, it means that the library is missing debug symbols.
+    # This test is also used to check if RcppDeepState returns correct analysis
+    # results when run on the testSAN package.
     logtable_is_empty <- all(sapply(result$logtable, function(table) nrow(table) == 0))
     
     expect_false(logtable_is_empty)
