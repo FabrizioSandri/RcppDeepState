@@ -150,8 +150,8 @@ deepstate_fun_create<-function(package_path,function_name,sep="infun"){
     # print the inputs
     print_values <- paste0('std::cout << "',arg.name,' values: " << ',arg.name, ' << std::endl;\n')                        
 
-    generator_harness_body <- paste0(generator_harness_body, variable, indent, save_inputs, indent, print_values)
-    runner_harness_body <- paste0(runner_harness_body, variable, indent, print_values)    
+    generator_harness_body <- paste0(generator_harness_body, variable, indent, print_values)
+    runner_harness_body <- paste0(runner_harness_body, variable, indent, save_inputs, indent, print_values)    
 
     proto_args <- gsub(" ","",paste0(proto_args, arg.name))
     if(argument.i <= nrow(functions.rows)) {
