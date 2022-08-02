@@ -7,12 +7,11 @@ ci_setup<-function(repository="./", event="pull_request"){
 
   # workflow events
   events <- paste0("on:\n", indent(), event, ":\n", indent(2), "branches:\n", 
-                   indent(3), "- '*'" )
+                   indent(3), "- '*'", "\n")
   name <- "name: 'RcppDeepState analysis'"
 
   # jobs definition
-  checkout_step <- paste0(indent(3), "- uses: ", "actions/checkout@v2", "\n")
-
+  checkout_step <- paste0(indent(3), "- uses: ", "actions/checkout@v2", "\n\n")
   rcppdeepstate_step <- paste0(indent(3), "- uses: ", 
                                "FabrizioSandri/RcppDeepState-action", "\n",
                                indent(4), "with:\n")
@@ -20,8 +19,16 @@ ci_setup<-function(repository="./", event="pull_request"){
   steps <- paste0(indent(2), "steps: ", "\n", checkout_step, rcppdeepstate_step)
 
   env <- paste0(indent(2), "env:", "\n", indent(3), 
-                "GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}")
+                "GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}", "\n")
 
+  jobs <- paste0("jobs:", "\n", indent(), "RcppDeepState:", "\n", indent(2),
+                 "runs-on: ubuntu-latest", "\n\n", env, "\n", steps)
+
+
+  # final workflow code
+  workflow_code <- paste(events, name, jobs, sep="\n")
+  
+  write(workflow_code, workflow_file, append=FALSE)
 }
 
 
