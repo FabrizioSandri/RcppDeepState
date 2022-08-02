@@ -1,5 +1,15 @@
-##' @title  travis setup
+##' @title  RcppDeepState-action GitHub workflow setup
 ##' @param repository path to the repository root folder
+##' @param event the event that triggers the workflow to run, accepted values 
+##' are pull_request and push
+##' @param fail_ci_if_error specify if CI pipeline should fail when 
+##' RcppDeepState finds errors
+##' @param location location of the package if not in the root of the repository
+##' @param seed seed used for deterministic fuzz testing and reproduce the 
+##' analysis results
+##' @param time_limit fuzzing phase's duration in seconds
+##' @param max_inputs number of inputs generated in the fuzzing phase to analyze
+##' @param comment print the analysis results as a comment in pull request
 ##' @export
 ci_setup <- function(repository="./", event="pull_request", 
                      fail_ci_if_error=FALSE, location="/", seed="-1", 
