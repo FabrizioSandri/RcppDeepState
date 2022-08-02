@@ -5,6 +5,10 @@ ci_setup<-function(repository="./", event="pull_request"){
   workflows_path <- file.path(repository, ".github", "workflows")
   workflow_file <- file.path(repository, workflows_path)
 
+  if(!dir.exists(workflows_path)){
+    dir.create(inputs_path, showWarnings = FALSE, recursive=TRUE)
+  }
+
   # workflow events
   events <- paste0("on:\n", indent(), event, ":\n", indent(2), "branches:\n", 
                    indent(3), "- '*'", "\n")
