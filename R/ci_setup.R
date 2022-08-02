@@ -2,22 +2,34 @@
 ##' @param repository path to the repository root folder
 ##' @export
 ci_setup<-function(repository="./", event="pull_request"){
-  workflows_path <- file.path(repository, ".github", "workflows")
-  workflow_file <- file.path(repository, workflows_path)
+  workflow_path <- gsub("[/]+", "/", file.path(repository, ".github/workflows"))
+  workflow_file <- file.path(workflow_path, "RcppDeepState.yaml")
+  
+  # repository containing the RcppDeepState-action
+  action_repo <- "FabrizioSandri/RcppDeepState-action"
 
-  if(!dir.exists(workflows_path)){
-    dir.create(inputs_path, showWarnings = FALSE, recursive=TRUE)
+  if(!dir.exists(workflow_path)){
+    dir.create(workflow_path, showWarnings = FALSE, recursive=TRUE)
+  }
+  
+  # workflow events
+  available_events <- c("push", "pull_request")
+  if (! event %in% available_events){
+    events <- paste0("on:\n", indent(), "# Add your events here", "\n")
+
+    event_warn <- paste("The specified event falls out of the supported ones.",
+                "Please manually edit file: ", workflow_file)
+    message(event_warn)
+  }else{
+    events <- paste0("on:\n", indent(), event, ":\n", indent(2), "branches:\n", 
+                   indent(3), "- '*'", "\n")
   }
 
-  # workflow events
-  events <- paste0("on:\n", indent(), event, ":\n", indent(2), "branches:\n", 
-                   indent(3), "- '*'", "\n")
   name <- "name: 'RcppDeepState analysis'"
 
   # jobs definition
   checkout_step <- paste0(indent(3), "- uses: ", "actions/checkout@v2", "\n\n")
-  rcppdeepstate_step <- paste0(indent(3), "- uses: ", 
-                               "FabrizioSandri/RcppDeepState-action", "\n",
+  rcppdeepstate_step <- paste0(indent(3), "- uses: ", action_repo, "\n",
                                indent(4), "with:\n")
 
   steps <- paste0(indent(2), "steps: ", "\n", checkout_step, rcppdeepstate_step)
