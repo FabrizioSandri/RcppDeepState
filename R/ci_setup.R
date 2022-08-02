@@ -9,7 +9,7 @@ ci_setup <- function(repository="./", event="pull_request",
   workflow_file <- file.path(workflow_path, "RcppDeepState.yaml")
   
   # repository containing the RcppDeepState-action
-  action_repo <- "FabrizioSandri/RcppDeepState-action"
+  action_repo <- "FabrizioSandri/RcppDeepState-action@main"
 
   if(!dir.exists(workflow_path)){
     dir.create(workflow_path, showWarnings = FALSE, recursive=TRUE)
