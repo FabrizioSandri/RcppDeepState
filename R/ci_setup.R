@@ -13,7 +13,8 @@
 ##' @export
 ci_setup <- function(repository="./", event="pull_request", 
                      fail_ci_if_error=FALSE, location="/", seed="-1", 
-                     time_limit="2", max_inputs="3", comment=FALSE){
+                     time_limit="2", max_inputs="3", comment=FALSE, 
+                     verbose=TRUE){
                     
   workflow_path <- gsub("[/]+", "/", file.path(repository, ".github/workflows"))
   workflow_file <- file.path(workflow_path, "RcppDeepState.yaml")
@@ -50,9 +51,10 @@ ci_setup <- function(repository="./", event="pull_request",
   time_limit_param <- get_param_yaml("time_limit", time_limit)
   max_inputs_param <- get_param_yaml("max_inputs", max_inputs)
   comment_param <- get_param_yaml("comment", tolower(comment))
-
+  verbose_param <- get_param_yaml("verbose", tolower(verbose))
+  
   params <- paste(fail_ci_param, location_param, seed_param, time_limit_param,
-                  max_inputs_param, comment_param, sep="\n")
+                  max_inputs_param, comment_param, verbose_param, sep="\n")
   rcppdeepstate_step <- paste0(indent(3), "- uses: ", action_repo, "\n",
                                indent(4), "with:\n", params)
 
