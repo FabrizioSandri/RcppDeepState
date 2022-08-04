@@ -10,6 +10,7 @@
 ##' @param time_limit fuzzing phase's duration in seconds
 ##' @param max_inputs number of inputs generated in the fuzzing phase to analyze
 ##' @param comment print the analysis results as a comment in pull request
+##' @param verbose enable the verbose logging mode of RcppDeepState
 ##' @export
 ci_setup <- function(repository="./", event="pull_request", 
                      fail_ci_if_error=FALSE, location="/", seed="-1", 

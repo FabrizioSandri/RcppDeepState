@@ -35,6 +35,8 @@ analysis results}
 \item{max_inputs}{number of inputs generated in the fuzzing phase to analyze}
 
 \item{comment}{print the analysis results as a comment in pull request}
+
+\item{verbose}{enable the verbose logging mode of RcppDeepState}
 }
 \description{
 RcppDeepState-action GitHub workflow setup
