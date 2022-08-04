@@ -12,7 +12,8 @@ ci_setup(
   seed = "-1",
   time_limit = "2",
   max_inputs = "3",
-  comment = FALSE
+  comment = FALSE,
+  verbose = TRUE
 )
 }
 \arguments{
