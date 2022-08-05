@@ -104,6 +104,7 @@ deepstate_fun_create<-function(package_path,function_name,sep="infun"){
   runner_harness_header <- paste0("\n\n","TEST(",unittest,", runner)","{","\n")
 
   # Test harness body
+  generation_comment <- if(sep == "generation") "// RANGES CAN BE ADDED HERE\n" else ""
   indent <- "  "
   inputs <- "#define INPUTS \\\n"
   inputs_dump <- ""
@@ -118,20 +119,17 @@ deepstate_fun_create<-function(package_path,function_name,sep="infun"){
     type.arg <-gsub("arma::","",type.arg)
     type.arg <-gsub("std::","",type.arg)
     
-    generation_comment1 <- ""
-    generation_comment2 <- ""
     if(sep == "generation" && !is.na(types_table[type.arg]$args)){
-      generation_comment1 <- paste0(indent, "//RcppDeepState_", type.arg, types_table[type.arg]$args,"\n")
-      generation_comment2 <- " //RANGE OF THE VECTOR CAN BE ADDED HERE"
+      generation_comment <- paste0(generation_comment, "// RcppDeepState_", type.arg, types_table[type.arg]$args,"\n")
     }
     
     # generate the inputs
     if (!is.na(types_table[type.arg]$rtype)){
-      variable <- paste0(indent, types_table[type.arg]$rtype, " ", arg.name,"(1);", " \\\n", generation_comment1, indent, arg.name, "[0]")
+      variable <- paste0(indent, types_table[type.arg]$rtype, " ", arg.name,"(1);", " \\\n", indent, arg.name, "[0]")
     }else{
-      variable <- paste0(generation_comment1, indent, arg.type, " ", arg.name)
+      variable <- paste0(indent, arg.type, " ", arg.name)
     }
-    variable <- paste0(variable, "= RcppDeepState_", type.arg, "();", generation_comment2, " \\\n")
+    variable <- paste0(variable, "= RcppDeepState_", type.arg, "();", " \\\n")
     variable <- gsub("const","",variable)
     
     # save the inputs
@@ -179,7 +177,7 @@ deepstate_fun_create<-function(package_path,function_name,sep="infun"){
   }
   runner_harness_body<-paste0(runner_harness_body,indent,"}catch(Rcpp::exception& e){\n",indent,indent,'std::cout<<"Exception Handled"<<std::endl;\n',indent,"}")
   
-  write_to_file<-paste0(write_to_file, inputs, generator_harness_header, generator_harness_body,"}", runner_harness_header, runner_harness_body, "\n}")
+  write_to_file<-paste0(write_to_file, generation_comment, inputs, generator_harness_header, generator_harness_body,"}", runner_harness_header, runner_harness_body, "\n}")
   write(write_to_file,file_path,append=TRUE)
 
   return(filename)
