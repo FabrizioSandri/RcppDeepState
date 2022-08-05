@@ -108,7 +108,7 @@ deepstate_fun_create<-function(package_path,function_name,sep="infun"){
   indent <- "  "
   inputs <- "#define INPUTS \\\n"
   inputs_dump <- ""
-  print_values <- paste0(indent, 'std::cout << "input starts" << std::endl;\n')
+  print_values <- paste0("\n\n#define PRINT_INPUTS \\\n",indent,"std::cout << \"input starts\" << std::endl;\\\n")
 
   proto_args <-""
   for(argument.i in 1:nrow(functions.rows)){
@@ -149,7 +149,7 @@ deepstate_fun_create<-function(package_path,function_name,sep="infun"){
 
     inputs <- paste0(inputs, variable)
     inputs_dump <- paste0(inputs_dump, indent, save_inputs)
-    print_values <- paste0(print_values, indent, 'std::cout << "',arg.name,' values: " << ',arg.name, ' << std::endl;\n')    
+    print_values <- paste0(print_values, indent, 'std::cout << "',arg.name,' values: " << ',arg.name, ' << std::endl; \\\n')    
     
     proto_args <- gsub(" ","",paste0(proto_args, arg.name))
     if(argument.i <= nrow(functions.rows)) {
@@ -165,19 +165,18 @@ deepstate_fun_create<-function(package_path,function_name,sep="infun"){
   }
 
   inputs <- gsub("\\\\\n$", "", inputs)
-
   print_values <- paste0(print_values, indent, 'std::cout << "input ends" << std::endl;\n')
 
-  generator_harness_body <- paste0(indent, "INPUTS\n", print_values)
+  generator_harness_body <- paste0(indent, "INPUTS\n", indent, "PRINT_INPUTS\n")
+  runner_harness_body <- paste0(indent, "INPUTS\n", indent, "PRINT_INPUTS\n", inputs_dump)
   
-  runner_harness_body <- paste0(indent, "INPUTS\n", inputs_dump, print_values)
   runner_harness_body<-paste0(runner_harness_body,indent,"try{\n",indent,indent,function_name,"(",gsub(",$","",proto_args),");\n")
   if(sep == "checks"){
     runner_harness_body<-paste0(runner_harness_body,indent,indent,"//ASSERT CONDITIONS CAN BE ADDED HERE\n") 
   }
   runner_harness_body<-paste0(runner_harness_body,indent,"}catch(Rcpp::exception& e){\n",indent,indent,'std::cout<<"Exception Handled"<<std::endl;\n',indent,"}")
   
-  write_to_file<-paste0(write_to_file, generation_comment, inputs, generator_harness_header, generator_harness_body,"}", runner_harness_header, runner_harness_body, "\n}")
+  write_to_file<-paste0(write_to_file, generation_comment, inputs, print_values, generator_harness_header, generator_harness_body,"}", runner_harness_header, runner_harness_body, "\n}")
   write(write_to_file,file_path,append=TRUE)
 
   return(filename)
