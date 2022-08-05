@@ -41,7 +41,7 @@ deepstate_fun_create<-function(package_path,function_name,sep="infun"){
 		datatype("mat", NA, NA))
 	setkey(types_table, "ctype")
 
-  headers <- "#include <fstream>\n#include <RInside.h>\n#include <iostream>\n#include <RcppDeepState.h>\n#include <qs.h>\n#include <DeepState.hpp>\n"
+  headers <- "#include <fstream>\n#include <RInside.h>\n#include <iostream>\n#include <RcppDeepState.h>\n#include <qs.h>\n#include <DeepState.hpp>\n\n"
   functions.rows  <- functions.list[functions.list$funName == function_name,]
   params <- gsub(" ","", functions.rows$argument.type)
   params <- gsub("const","",params)
@@ -97,7 +97,7 @@ deepstate_fun_create<-function(package_path,function_name,sep="infun"){
   }
 
   write_to_file <- paste0(write_to_file,"RInside Rinstance;\n\n")  # create a single RInside instance at the beginning
-  write_to_file <-paste0(write_to_file,pt[1,pt$prototype],"\n")
+  write_to_file <-paste0(write_to_file,pt[1,pt$prototype],"\n\n")
   
   unittest <- gsub(".","",packagename, fixed=TRUE)
   generator_harness_header <- paste0("\n\n","TEST(",unittest,", generator)","{","\n")
@@ -105,8 +105,10 @@ deepstate_fun_create<-function(package_path,function_name,sep="infun"){
 
   # Test harness body
   indent <- "  "
-  generator_harness_body <- paste0(indent,'std::cout << "input starts" << std::endl;\n')
-  runner_harness_body <- paste0(indent,'std::cout << "input starts" << std::endl;\n')
+  inputs <- "#define INPUTS \\\n"
+  inputs_dump <- ""
+  print_values <- paste0(indent, 'std::cout << "input starts" << std::endl;\n')
+
   proto_args <-""
   for(argument.i in 1:nrow(functions.rows)){
     arg.type <- gsub(" ","",functions.rows [argument.i,argument.type])
@@ -125,11 +127,11 @@ deepstate_fun_create<-function(package_path,function_name,sep="infun"){
     
     # generate the inputs
     if (!is.na(types_table[type.arg]$rtype)){
-      variable <- paste0(indent, types_table[type.arg]$rtype, " ", arg.name,"(1);", "\n", generation_comment1, indent, arg.name, "[0]")
+      variable <- paste0(indent, types_table[type.arg]$rtype, " ", arg.name,"(1);", " \\\n", generation_comment1, indent, arg.name, "[0]")
     }else{
       variable <- paste0(generation_comment1, indent, arg.type, " ", arg.name)
     }
-    variable <- paste0(variable, "= RcppDeepState_", type.arg, "();", generation_comment2, "\n")
+    variable <- paste0(variable, "= RcppDeepState_", type.arg, "();", generation_comment2, " \\\n")
     variable <- gsub("const","",variable)
     
     # save the inputs
@@ -147,12 +149,10 @@ deepstate_fun_create<-function(package_path,function_name,sep="infun"){
       save_inputs <- paste0('qs::c_qsave(',arg.name,',"',input_vals,'",\n','\t\t"high", "zstd", 1, 15, true, 1);\n')
     }
 
-    # print the inputs
-    print_values <- paste0('std::cout << "',arg.name,' values: " << ',arg.name, ' << std::endl;\n')                        
-
-    generator_harness_body <- paste0(generator_harness_body, variable, indent, print_values)
-    runner_harness_body <- paste0(runner_harness_body, variable, indent, save_inputs, indent, print_values)    
-
+    inputs <- paste0(inputs, variable)
+    inputs_dump <- paste0(inputs_dump, indent, save_inputs)
+    print_values <- paste0(print_values, indent, 'std::cout << "',arg.name,' values: " << ',arg.name, ' << std::endl;\n')    
+    
     proto_args <- gsub(" ","",paste0(proto_args, arg.name))
     if(argument.i <= nrow(functions.rows)) {
       if(type.arg == "int" || type.arg == "double"){
@@ -165,14 +165,21 @@ deepstate_fun_create<-function(package_path,function_name,sep="infun"){
     }
 
   }
-  generator_harness_body<-paste0(generator_harness_body,indent,'std::cout << "input ends" << std::endl;\n')
-  runner_harness_body<-paste0(runner_harness_body,indent,'std::cout << "input ends" << std::endl;\n')
+
+  inputs <- gsub("\\\\\n$", "", inputs)
+
+  print_values <- paste0(print_values, indent, 'std::cout << "input ends" << std::endl;\n')
+
+  generator_harness_body <- paste0(indent, "INPUTS\n", print_values)
+  
+  runner_harness_body <- paste0(indent, "INPUTS\n", inputs_dump, print_values)
   runner_harness_body<-paste0(runner_harness_body,indent,"try{\n",indent,indent,function_name,"(",gsub(",$","",proto_args),");\n")
   if(sep == "checks"){
     runner_harness_body<-paste0(runner_harness_body,indent,indent,"//ASSERT CONDITIONS CAN BE ADDED HERE\n") 
   }
   runner_harness_body<-paste0(runner_harness_body,indent,"}catch(Rcpp::exception& e){\n",indent,indent,'std::cout<<"Exception Handled"<<std::endl;\n',indent,"}")
-  write_to_file<-paste0(write_to_file, generator_harness_header, generator_harness_body,"}", runner_harness_header, runner_harness_body, "\n}")
+  
+  write_to_file<-paste0(write_to_file, inputs, generator_harness_header, generator_harness_body,"}", runner_harness_header, runner_harness_body, "\n}")
   write(write_to_file,file_path,append=TRUE)
 
   return(filename)
