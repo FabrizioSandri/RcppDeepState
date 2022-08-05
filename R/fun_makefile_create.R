@@ -4,9 +4,8 @@
 ##' @description This function generates makefile for the provided function specific TestHarness
 ##' @export
 deepstate_create_makefile <-function(package,fun_name){
-  #list.paths <-nc::capture_first_vec(package, "/",root=".+?","/",remain_path=".*")
+  
   inst_path <- file.path(package, "inst")
-  #p <- nc::capture_all_str(list.paths$remain_path,val=".+/",folder=".+/",packagename=".*")
   test_path <- file.path(inst_path,"testfiles")
   fun_path <- file.path(test_path,fun_name)
   log_file_path <- file.path(fun_path,paste0(fun_name,"_log"))
@@ -18,7 +17,6 @@ deepstate_create_makefile <-function(package,fun_name){
   test_harness.o_path <- file.path(fun_path,test_harness.o)
   test_harness.cpp_path <- file.path(fun_path,test_harness.cpp)
   test_harness_path <- file.path(fun_path,test_harness)
-  file.create(makefile_path, recursive=TRUE)
 
   # R home, include and lib directories
   path_home <-paste0("R_HOME=",R.home())
@@ -58,8 +56,8 @@ deepstate_create_makefile <-function(package,fun_name){
   compiler_ldlibs <- paste("-lR", "-lRInside", "-ldeepstate")
   write_to_file <- paste0(write_to_file, "LDLIBS=",compiler_ldlibs, "\n\n")
 
-  # install.packages(setdiff(basename(package), rownames(installed.packages())),repos = "http://cran.us.r-project.org")
-  dir.create(file.path(fun_path, paste0(fun_name,"_output")), showWarnings = FALSE)
+  dir.create(file.path(fun_path, paste0(fun_name,"_output")), showWarnings=FALSE, recursive=TRUE)
+  file.create(makefile_path, recursive=TRUE)
 
   obj.file.list <- Sys.glob(file.path(package,"src/*.so"))
   obj.file.path <- obj.file.list
@@ -75,4 +73,11 @@ deepstate_create_makefile <-function(package,fun_name){
   write_to_file<-paste0(write_to_file, "\n\t", "clang++ -g -c ", " ${CPPFLAGS} ", test_harness.cpp_path, " -o ", test_harness.o_path)
   
   write(write_to_file, makefile_path, append=TRUE)
+
+  # create the inputs folder
+  inputs_path <- file.path(fun_path, "inputs")
+  if(!dir.exists(inputs_path)){
+    dir.create(inputs_path)
+  }
+  
 }
