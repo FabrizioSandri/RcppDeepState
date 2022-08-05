@@ -6,6 +6,7 @@
 \usage{
 ci_setup(
   repository = "./",
+  workflow_file_name = "RcppDeepState.yaml",
   event = "pull_request",
   fail_ci_if_error = FALSE,
   location = "/",
@@ -18,6 +19,8 @@ ci_setup(
 }
 \arguments{
 \item{repository}{path to the repository root folder}
+
+\item{workflow_file_name}{the name of the resulting workflow file}
 
 \item{event}{the event that triggers the workflow to run, accepted values 
 are pull_request and push}

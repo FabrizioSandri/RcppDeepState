@@ -1,5 +1,6 @@
 ##' @title  RcppDeepState-action GitHub workflow setup
 ##' @param repository path to the repository root folder
+##' @param workflow_file_name the name of the resulting workflow file
 ##' @param event the event that triggers the workflow to run, accepted values 
 ##' are pull_request and push
 ##' @param fail_ci_if_error specify if CI pipeline should fail when 
@@ -12,13 +13,13 @@
 ##' @param comment print the analysis results as a comment in pull request
 ##' @param verbose enable the verbose logging mode of RcppDeepState
 ##' @export
-ci_setup <- function(repository="./", event="pull_request", 
-                     fail_ci_if_error=FALSE, location="/", seed="-1", 
-                     time_limit="2", max_inputs="3", comment=FALSE, 
+ci_setup <- function(repository="./", workflow_file_name="RcppDeepState.yaml", 
+                     event="pull_request", fail_ci_if_error=FALSE, location="/", 
+                     seed="-1", time_limit="2", max_inputs="3", comment=FALSE, 
                      verbose=TRUE){
                     
   workflow_path <- gsub("[/]+", "/", file.path(repository, ".github/workflows"))
-  workflow_file <- file.path(workflow_path, "RcppDeepState.yaml")
+  workflow_file <- file.path(workflow_path, workflow_file_name)
   
   # repository containing the RcppDeepState-action
   action_repo <- "FabrizioSandri/RcppDeepState-action@main"
