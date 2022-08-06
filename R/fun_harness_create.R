@@ -51,10 +51,21 @@ deepstate_fun_create<-function(package_path, function_name, sep="infun"){
   params <- gsub("arma::","",params)
   params <- gsub("std::","",params)
 
+  filename <- if(sep == "generation" || sep == "checks"){
+    paste0(function_name,"_DeepState_TestHarness_",sep,".cpp")
+  }else{
+    paste0(function_name,"_DeepState_TestHarness.cpp")
+  }
+
   # check if the parameters are allowed or not
   matched <- params %in% types_table$ctype
   unsupported_datatypes <- params[!matched]
-  if(length(unsupported_datatypes) > 0){
+  if(file.exists(filename)){
+    warn_msg <- paste0("Test harness already exists for the function",
+                       function_name, " - using the existing one\n")
+    message(warn_msg)
+    return(filename)
+  }else if(length(unsupported_datatypes) > 0){
     unsupported_datatypes <- paste(unsupported_datatypes, collapse=",")
     error_msg <- paste0("We can't test the function - ", function_name,
                         " - due to the following datatypes falling out of the ",
@@ -64,11 +75,6 @@ deepstate_fun_create<-function(package_path, function_name, sep="infun"){
   }
 
   pt <- prototypes_calls[prototypes_calls$funName == function_name,]
-  filename <- if(sep == "generation" || sep == "checks"){
-    paste0(function_name,"_DeepState_TestHarness_",sep,".cpp")
-  }else{
-    paste0(function_name,"_DeepState_TestHarness.cpp")
-  }
 
   fun_path <- file.path(package_path, "inst", "testfiles", function_name)
   if(!dir.exists(fun_path)){

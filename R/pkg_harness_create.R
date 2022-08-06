@@ -13,15 +13,12 @@
 deepstate_pkg_create<-function(package_path, verbose=getOption("verbose")){
   package_path <-normalizePath(package_path, mustWork=TRUE)
   package_path <- sub("/$","",package_path)
-  inst_path <- file.path(package_path, "inst")
-  test_path <- file.path(inst_path,"testfiles")
+  test_path <- file.path(package_path, "inst","testfiles")
 
   # Test directory structure initialization
-  unlink(test_path, recursive = TRUE)
-  if(!dir.exists(inst_path)) {
-    dir.create(inst_path)
+  if(!dir.exists(test_path)) {
+    dir.create(test_path, showWarnings=FALSE, recursive=TRUE)
   }
-  dir.create(test_path,showWarnings = FALSE)
 
   if(!file.exists(file.path(package_path,"src/*.so"))) {
     # ensure that the debugging symbols are embedded in the resulting shared object
@@ -57,9 +54,9 @@ deepstate_pkg_create<-function(package_path, verbose=getOption("verbose")){
       filepath <-deepstate_fun_create(package_path,function_name.i)
       filename <- paste0(function_name.i,"_DeepState_TestHarness",".cpp")
 
-      if(!is.na(filepath) && basename(filepath) ==  filename ){
+      if(!is.na(filepath) && basename(filepath) == filename ){
         match_count = match_count + 1
-        harness <- c(harness,filename) 
+        harness <- c(harness, filename) 
       }else {
         mismatch_count = mismatch_count + 1
         failed.harness <- c(failed.harness,function_name.i)
