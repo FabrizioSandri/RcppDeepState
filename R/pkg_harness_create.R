@@ -18,6 +18,19 @@ deepstate_pkg_create<-function(package_path, verbose=getOption("verbose")){
   # Test directory structure initialization
   if(!dir.exists(test_path)) {
     dir.create(test_path, showWarnings=FALSE, recursive=TRUE)
+  }else{
+    # delete all the existing files except for the harness
+    for(function_name in list.files(test_path)) {
+      fun_path <- file.path(test_path, function_name)
+      filename <- paste0(function_name,"_DeepState_TestHarness",".cpp")
+      harness_path <- file.path(fun_path, filename)
+
+      # delete all the files and directories except the harness file
+      if(file.exists(harness_path)){
+        delete_content <- setdiff(list.files(fun_path), filename)
+        unlink(file.path(fun_path, delete_content), recursive=TRUE)
+      }
+    }
   }
 
   if(!file.exists(file.path(package_path,"src/*.so"))) {
@@ -49,17 +62,9 @@ deepstate_pkg_create<-function(package_path, verbose=getOption("verbose")){
     
     fun_names <- unique(functions.list$funName)
     for(function_name.i in fun_names) {
-      filename <- paste0(function_name.i,"_DeepState_TestHarness",".cpp")
       fun_path <- file.path(test_path, function_name.i)
+      filename <- paste0(function_name.i,"_DeepState_TestHarness",".cpp")
       harness_path <- file.path(fun_path, filename)
-
-      # delete all the files and directories except the harness file
-      if(file.exists(harness_path)){
-        delete_content <- setdiff(list.files(fun_path), filename)
-        print("Deleting ")
-        print(delete_content)
-        # unlink(delete_content, recursive = TRUE)
-      }
 
       functions.rows  <- functions.list [functions.list$funName == function_name.i,]
       params <- c(functions.rows$argument.type)
