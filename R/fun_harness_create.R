@@ -16,7 +16,8 @@ deepstate_fun_create<-function(package_path, function_name, sep="infun"){
   functions.list <- deepstate_get_function_body(package_path)
   functions.list$argument.type <- gsub("Rcpp::","",functions.list$argument.type)
   prototypes_calls <- deepstate_get_prototype_calls(package_path)
-  
+  fun_path <- file.path(package_path, "inst", "testfiles", function_name)
+
   if(sep == "generation" || sep == "checks"){ 
     if(is.null(functions.list) || length(functions.list) < 1){
       stop("No Rcpp Function to test in the package")
@@ -60,7 +61,8 @@ deepstate_fun_create<-function(package_path, function_name, sep="infun"){
   # check if the parameters are allowed or not
   matched <- params %in% types_table$ctype
   unsupported_datatypes <- params[!matched]
-  if(file.exists(filename)){
+  if(file.exists(file.path(fun_path, filename))){
+    deepstate_create_makefile(package_path,function_name)
     warn_msg <- paste0("Test harness already exists for the function",
                        function_name, " - using the existing one\n")
     message(warn_msg)
@@ -76,7 +78,6 @@ deepstate_fun_create<-function(package_path, function_name, sep="infun"){
 
   pt <- prototypes_calls[prototypes_calls$funName == function_name,]
 
-  fun_path <- file.path(package_path, "inst", "testfiles", function_name)
   if(!dir.exists(fun_path)){
     dir.create(fun_path, showWarnings = FALSE, recursive = TRUE)
   }
