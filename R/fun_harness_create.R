@@ -63,7 +63,7 @@ deepstate_fun_create<-function(package_path, function_name, sep="infun"){
   unsupported_datatypes <- params[!matched]
   if(file.exists(file.path(fun_path, filename))){
     deepstate_create_makefile(package_path,function_name)
-    warn_msg <- paste0("Test harness already exists for the function",
+    warn_msg <- paste0("Test harness already exists for the function - ",
                        function_name, " - using the existing one\n")
     message(warn_msg)
     return(filename)
