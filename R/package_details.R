@@ -84,3 +84,14 @@ get_package_name <- function(package_path){
 }
 
 
+
+globalVariables(c("argument.name","funName","argument.type","calls"
+                  ,"code","funName",".","error.i","src.file.lines",
+                  "heapsum","file.line","arg.name","value",":=",".N","f","fun_name"
+                  ,"read.table","new.i.vec","download.file","result","inputs",
+                  "rest","status","fun","max_inputs","package_name","pkg.list","testfiles.res"))
+
+globalVariables(c("error.i","error.type","sanitizer","function.i",
+                  "src.file.lines","heapsum","file.line","arg.name",
+                  "value",".N",":=","prototype","data.table"))
+
