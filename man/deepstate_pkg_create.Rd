@@ -15,7 +15,8 @@ deepstate_pkg_create(package_path, verbose = getOption("verbose"))
 A character vector of TestHarness files that are generated
 }
 \description{
-Creates Testharness for all the functions in the package that you want to test
+Creates Testharness for all the functions in the package that
+you want to test
 using RcppDeepState.
 }
 \examples{
