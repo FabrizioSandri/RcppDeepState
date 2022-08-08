@@ -17,7 +17,7 @@
 ##' @return The executed function.
 ##' @export
 deepstate_fuzz_fun<-function(package_path,fun_name,seed=-1,time.limit.seconds=2,sep="infun", verbose=getOption("verbose")){
-  packagename <- basename(package_path)
+  packagename <- get_package_name(package_path)
 
   if(!dir.exists(file.path(package_path,"inst/testfiles"))){
     stop("Missing testfiles directory")

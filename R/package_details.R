@@ -62,3 +62,36 @@ deepstate_get_prototype_calls <-function(package_path){
   prototypes <-funs[,.(funName,prototype,calls=codes$calls)]
   return(prototypes)
 }
+
+
+##' @title get_package_name
+##' @description gets the name of a package from its DESCRIPTION file
+##' @param package_path location of the package in the filesystem
+##' @export
+get_package_name <- function(package_path){
+  description_file <- file.path(package_path, "DESCRIPTION")
+  if (!file.exists(description_file)) {
+    message(paste0("ERROR: ", location, " doesn't contain a valid package with",
+                    " a DESCRIPTION file"))
+    return(NA_character_)
+  }
+
+  # parse the DESCRIPTION file in order to get the package name
+  description_lines <- readLines(description_file)
+  package_name_line <- description_lines[grepl("^Package:", description_lines)]
+  package_name <- gsub("Package: ", "", package_name_line[1])
+  
+}
+
+
+
+globalVariables(c("argument.name","funName","argument.type","calls"
+                  ,"code","funName",".","error.i","src.file.lines",
+                  "heapsum","file.line","arg.name","value",":=",".N","f","fun_name"
+                  ,"read.table","new.i.vec","download.file","result","inputs",
+                  "rest","status","fun","max_inputs","package_name","pkg.list","testfiles.res"))
+
+globalVariables(c("error.i","error.type","sanitizer","function.i",
+                  "src.file.lines","heapsum","file.line","arg.name",
+                  "value",".N",":=","prototype","data.table"))
+

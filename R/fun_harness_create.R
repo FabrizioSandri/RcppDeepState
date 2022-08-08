@@ -10,9 +10,9 @@
 ##' print(function.harness)
 ##' @return The TestHarness file that is generated
 ##' @export
-deepstate_fun_create<-function(package_path, function_name, sep="infun"){
+deepstate_fun_create <- function(package_path, function_name, sep="infun"){
   
-  packagename <- basename(package_path)
+  packagename <- get_package_name(package_path)
   functions.list <- deepstate_get_function_body(package_path)
   functions.list$argument.type <- gsub("Rcpp::","",functions.list$argument.type)
   prototypes_calls <- deepstate_get_prototype_calls(package_path)
@@ -23,24 +23,24 @@ deepstate_fun_create<-function(package_path, function_name, sep="infun"){
       stop("No Rcpp Function to test in the package")
     }
   }
-	
+  
   # Each row of the "types_table" table corresponds to a supported datatype and
   # provides details for each datatype. The first column contains an alternative 
   # datatype to be used when running `qs::c_qsave`, whereas the second column 
   # correspond to the associated generation function with a range. When a 
   # datatype contains a value of NA in both columns, it is supported, utilizes 
   # itself when executing `qs::c_qsave` and lacks a range function. 
-	datatype <- function(ctype, rtype, args) data.table(ctype, rtype, args)
-	types_table <- rbind(
-		datatype("int", "IntegerVector", "(low,high)"),
-		datatype("double", "NumericVector", "(low,high)"),
-		datatype("string", "CharacterVector", NA),
-		datatype("NumericVector", NA, "(size,low,high)"),
-		datatype("IntegerVector", NA, "(size,low,high)"),
-		datatype("NumericMatrix", NA, "(size,low,high)"),
-		datatype("CharacterVector", NA, NA),
-		datatype("mat", NA, NA))
-	setkey(types_table, "ctype")
+  datatype <- function(ctype, rtype, args) data.table(ctype, rtype, args)
+  types_table <- rbind(
+    datatype("int", "IntegerVector", "(low,high)"),
+    datatype("double", "NumericVector", "(low,high)"),
+    datatype("string", "CharacterVector", NA),
+    datatype("NumericVector", NA, "(size,low,high)"),
+    datatype("IntegerVector", NA, "(size,low,high)"),
+    datatype("NumericMatrix", NA, "(size,low,high)"),
+    datatype("CharacterVector", NA, NA),
+    datatype("mat", NA, NA))
+  setkey(types_table, "ctype")
 
   headers <- paste("#include <fstream>", "#include <RInside.h>", 
                    "#include <iostream>", "#include <RcppDeepState.h>", 

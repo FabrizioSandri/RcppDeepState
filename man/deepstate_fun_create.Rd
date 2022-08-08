@@ -17,7 +17,7 @@ deepstate_fun_create(package_path, function_name, sep = "infun")
 The TestHarness file that is generated
 }
 \description{
-The function creates Testharness for the provided function name.
+The function creates Testharness for the provided function name
 }
 \examples{
 path <- system.file("testpkgs/testSAN", package = "RcppDeepState")
