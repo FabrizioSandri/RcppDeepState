@@ -23,7 +23,7 @@ deepstate_harness_analyze_pkg <- function(path, testfiles="all", max_inputs="all
   }
   test_path <- file.path(inst_path,"testfiles")
   if(file.exists(test_path)){
-    packagename <- basename(package_name)
+    packagename <- get_package_name(package_name)
     test.files <- Sys.glob(paste0(test_path,"/*"))
     if(testfiles != "all"){
       test.files <- test.files[1:testfiles]
