@@ -10,12 +10,15 @@ deepstate_editable_fun<-function(package_path,function_name){
   deepstate_fun_create(package_path,function_name,sep="checks")  
 }
 
-##' @title  Generation Testharness compilation
-##' @param package_path path to the testpackage
+##' @title Generation test harness compilation and execution
+##' @param package_path path to the tested package
 ##' @param function_name function name in the package
-##' @description This function compiles the generation testharness.
+##' @param verbose used to deliver more in depth information
+##' @description This function compiles and runs the generation test harness.
+##' The generation test harness contains user defined ranges 
 ##' @export
-deepstate_compile_generate_fun <-function(package_path,function_name){
+deepstate_compile_generate_fun <- function(package_path, function_name, 
+                      verbose=getOption("verbose")){
   inst_path <- file.path(package_path, "inst")
   test_path <- file.path(inst_path,"testfiles")
   filename  <- paste0(function_name,"_DeepState_TestHarness_generation.cpp")
@@ -50,10 +53,10 @@ deepstate_compile_generate_fun <-function(package_path,function_name){
       
     }
 
-    fun_generated <- deepstate_fuzz_fun(package_path, fun_name, sep="generation")
-    print(fun_generated)
-    final_res <- deepstate_analyze_fun(package_path, fun_name, sep="generation")
-    print(final_res)
+    deepstate_fuzz_fun(package_path, fun_name, sep="generation", 
+                       verbose=verbose)
+    deepstate_analyze_fun(package_path, fun_name, sep="generation", 
+                          verbose=verbose)
 
   }else{
     stop("Editable file doesn't exist. Run deepstate_editable_fun")

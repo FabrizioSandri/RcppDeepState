@@ -2,15 +2,22 @@
 % Please edit documentation in R/editable_fun.R
 \name{deepstate_compile_generate_fun}
 \alias{deepstate_compile_generate_fun}
-\title{Generation Testharness compilation}
+\title{Generation test harness compilation and execution}
 \usage{
-deepstate_compile_generate_fun(package_path, function_name)
+deepstate_compile_generate_fun(
+  package_path,
+  function_name,
+  verbose = getOption("verbose")
+)
 }
 \arguments{
-\item{package_path}{path to the testpackage}
+\item{package_path}{path to the tested package}
 
 \item{function_name}{function name in the package}
+
+\item{verbose}{used to deliver more in depth information}
 }
 \description{
-This function compiles the generation testharness.
+This function compiles and runs the generation test harness.
+The generation test harness contains user defined ranges
 }
