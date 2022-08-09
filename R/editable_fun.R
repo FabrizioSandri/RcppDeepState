@@ -43,7 +43,7 @@ deepstate_compile_generate_fun <- function(package_path, function_name,
         message(warn_msg)
 
         response <- readline(prompt="Enter y/n to continue/exit:\n")
-        if(response != 'y') {
+        if(response == 'n') {
           error_msg <- paste0("Execution stopped. Please provide the following",
                               " range : \n", variable$val, " : ", variable$type)
           stop(error_msg)
