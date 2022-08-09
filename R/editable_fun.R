@@ -8,7 +8,7 @@
 deepstate_editable_fun<-function(package_path,function_name){
   deepstate_fun_create(package_path,function_name,sep="generation")  
   deepstate_fun_create(package_path,function_name,sep="checks")  
-  }
+}
 
 ##' @title  Generation Testharness compilation
 ##' @param package_path path to the testpackage
@@ -39,9 +39,9 @@ deepstate_compile_generate_fun <-function(package_path,function_name){
       print(no.specified.range)
       response <- readline(prompt="Enter y/n to continue/exit:\n")
       if(response == 'y'){
-        fun_generated <- deepstate_fuzz_fun(fun_path,time.limit.seconds=2,sep="generation")
+        fun_generated <- deepstate_fuzz_fun(package_path, fun_name, sep="generation", verbose=TRUE)
         print(fun_generated)
-        final_res <- deepstate_analyze_fun(fun_path,sep="generation")
+        final_res <- deepstate_analyze_fun(package_path, fun_name, sep="generation")
         print(final_res)
       }
     }
@@ -70,9 +70,9 @@ deepstate_compile_checks_fun <-function(package_path,function_name){
       message(sprintf("No asserts are specified you still want to continue?"))
       response <- readline(prompt="Enter y/n to continue/exit:\n")
       if(response == 'y' || length(range_check) > 0){
-        fun_generated <- deepstate_fuzz_fun(fun_path,time.limit.seconds=2,sep="generation")
+        fun_generated <- deepstate_fuzz_fun(package_path, fun_name, sep="checks")
         print(fun_generated)
-        final_res <- deepstate_analyze_fun(fun_path,sep="generation")
+        final_res <- deepstate_analyze_fun(package_path, fun_name, sep="generation")
         print(final_res)
       }
     }else{
