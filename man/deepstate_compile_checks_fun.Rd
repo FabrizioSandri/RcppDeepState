@@ -2,15 +2,22 @@
 % Please edit documentation in R/editable_fun.R
 \name{deepstate_compile_checks_fun}
 \alias{deepstate_compile_checks_fun}
-\title{Checks Testharness compilation}
+\title{Checks Testharness compilation and execution}
 \usage{
-deepstate_compile_checks_fun(package_path, function_name)
+deepstate_compile_checks_fun(
+  package_path,
+  function_name,
+  verbose = getOption("verbose")
+)
 }
 \arguments{
 \item{package_path}{path to the testpackage}
 
 \item{function_name}{function name in the package}
+
+\item{verbose}{used to deliver more in depth information}
 }
 \description{
-This function compiles the checks testharness.
+This function compiles and runs the checks test harness.
+The checks test harness contains user defined assertions
 }
