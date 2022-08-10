@@ -80,7 +80,7 @@ deepstate_compile_checks_fun <- function(package_path, function_name,
   if(file.exists(fun_path)){
     harness_lines <- readLines(file_path, warn=FALSE)
     assert_lines <- grep("ASSERT_", harness_lines, value=TRUE, fixed=TRUE)
-    if(length(assert_lines) == 0) # no assert line found
+    if(length(assert_lines) == 0) { # no assert line found
       warn_msg <- "No asserts are specified you still want to continue?"
       message(warn_msg)
       
@@ -90,9 +90,9 @@ deepstate_compile_checks_fun <- function(package_path, function_name,
         stop(error_msg)
       }
 
-      deepstate_fuzz_fun(package_path, fun_name, sep="checks", verbose=verbose)
-      deepstate_analyze_fun(package_path, fun_name, sep="checks", 
-                            verbose=verbose)
+    }
+    deepstate_fuzz_fun(package_path, fun_name, sep="checks", verbose=verbose)
+    deepstate_analyze_fun(package_path, fun_name, sep="checks", verbose=verbose)
       
   }else{
     stop("Editable file doesn't exist. Run deepstate_editable_fun")
