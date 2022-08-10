@@ -1,13 +1,13 @@
 ##' @title Generation and Checks TestHarness creation
 ##' @param package_path path to the test package
 ##' @param function_name function name in the package
-##' @description This function creates two different testharness one for generating the vectors of 
-##' user defined size that are creatd by deepstate and second for writing asserts/checks 
-##' on the result/generated inputs.
+##' @description This function creates two different testharness one for 
+##' generating the vectors of user defined size that are created by deepstate 
+##' and second for writing asserts/checks on the result/generated inputs.
 ##' @export
-deepstate_editable_fun<-function(package_path,function_name){
-  deepstate_fun_create(package_path,function_name,sep="generation")
-  deepstate_fun_create(package_path,function_name,sep="checks")
+deepstate_editable_fun <- function(package_path, function_name){
+  deepstate_fun_create(package_path, function_name, sep="generation")
+  deepstate_fun_create(package_path, function_name, sep="checks")
 }
 
 ##' @title Generation test harness compilation and execution
