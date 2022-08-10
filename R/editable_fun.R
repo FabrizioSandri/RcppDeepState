@@ -6,8 +6,8 @@
 ##' on the result/generated inputs.
 ##' @export
 deepstate_editable_fun<-function(package_path,function_name){
-  deepstate_fun_create(package_path,function_name,sep="generation")  
-  deepstate_fun_create(package_path,function_name,sep="checks")  
+  deepstate_fun_create(package_path,function_name,sep="generation")
+  deepstate_fun_create(package_path,function_name,sep="checks")
 }
 
 ##' @title Generation test harness compilation and execution
@@ -21,7 +21,7 @@ deepstate_compile_generate_fun <- function(package_path, function_name,
                       verbose=getOption("verbose")){
   inst_path <- file.path(package_path, "inst")
   test_path <- file.path(inst_path,"testfiles")
-  filename  <- paste0(function_name,"_DeepState_TestHarness_generation.cpp")
+  filename <- paste0(function_name,"_DeepState_TestHarness_generation.cpp")
   fun_path <- file.path(test_path,function_name)
   file_path <- file.path(test_path,function_name,filename)
   makefile.path <- file.path(test_path,function_name)
@@ -63,32 +63,38 @@ deepstate_compile_generate_fun <- function(package_path, function_name,
   }
 }
 
-##' @title  Checks Testharness compilation
+##' @title Checks Testharness compilation and execution
 ##' @param package_path path to the testpackage
 ##' @param function_name function name in the package
-##' @description This function compiles the checks testharness.
+##' @param verbose used to deliver more in depth information
+##' @description This function compiles and runs the checks test harness.
+##' The checks test harness contains user defined assertions 
 ##' @export
-deepstate_compile_checks_fun <-function(package_path,function_name){
-  inst_path <- file.path(package_path, "inst")
-  test_path <- file.path(inst_path,"testfiles")
-  filename  <- paste0(function_name,"_DeepState_TestHarness_checks.cpp")
-  missing_range <- list()
-  fun_path <- file.path(test_path,function_name)
-  file_path <- file.path(test_path,function_name,filename)
-  makefile.path <- file.path(test_path,function_name)
+deepstate_compile_checks_fun <- function(package_path, function_name, 
+                      verbose=getOption("verbose")){
+  test_path <- file.path(package_path, "inst", "testfiles")
+  filename <- paste0(function_name, "_DeepState_TestHarness_checks.cpp")
+  fun_path <- file.path(test_path, function_name)
+  file_path <- file.path(test_path, function_name, filename)
+  makefile.path <- file.path(test_path, function_name)
   if(file.exists(fun_path)){
-    harness_lines <- readLines(file_path,warn=FALSE)
-     range_check <- grep("ASSERT_",harness_lines,value = TRUE,fixed=TRUE)
-     if(length(range_check) == 0)
-      message(sprintf("No asserts are specified you still want to continue?"))
+    harness_lines <- readLines(file_path, warn=FALSE)
+    assert_lines <- grep("ASSERT_", harness_lines, value=TRUE, fixed=TRUE)
+    if(length(assert_lines) == 0) # no assert line found
+      warn_msg <- "No asserts are specified you still want to continue?"
+      message(warn_msg)
+      
       response <- readline(prompt="Enter y/n to continue/exit:\n")
-      if(response == 'y' || length(range_check) > 0){
-        fun_generated <- deepstate_fuzz_fun(package_path, fun_name, sep="checks")
-        print(fun_generated)
-        final_res <- deepstate_analyze_fun(package_path, fun_name, sep="generation")
-        print(final_res)
+      if(response == 'n') {
+        error_msg <- "Execution stopped. Please provide some assertions."
+        stop(error_msg)
       }
-    }else{
+
+      deepstate_fuzz_fun(package_path, fun_name, sep="checks", verbose=verbose)
+      deepstate_analyze_fun(package_path, fun_name, sep="checks", 
+                            verbose=verbose)
+      
+  }else{
     stop("Editable file doesn't exist. Run deepstate_editable_fun")
   }
 }
