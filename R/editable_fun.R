@@ -13,12 +13,14 @@ deepstate_editable_fun <- function(package_path, function_name){
 ##' @title Generation test harness compilation and execution
 ##' @param package_path path to the tested package
 ##' @param function_name function name in the package
+##' @param continue_on_missing if set to FALSE, terminates the execution if 
+##' at leas one range is missing
 ##' @param verbose used to deliver more in depth information
 ##' @description This function compiles and runs the generation test harness.
 ##' The generation test harness contains user defined ranges 
 ##' @export
-deepstate_compile_generate_fun <- function(package_path, function_name, 
-                      verbose=getOption("verbose")){
+deepstate_compile_generate_fun <- function(package_path, function_name,
+                      continue_on_missing=TRUE, verbose=getOption("verbose")){
   inst_path <- file.path(package_path, "inst")
   test_path <- file.path(inst_path,"testfiles")
   filename <- paste0(function_name,"_DeepState_TestHarness_generation.cpp")
@@ -42,8 +44,7 @@ deepstate_compile_generate_fun <- function(package_path, function_name,
                            variable$val, " : ", variable$type)
         message(warn_msg)
 
-        response <- readline(prompt="Enter y/n to continue/exit:\n")
-        if(response == 'n') {
+        if(!continue_on_missing) {
           error_msg <- paste0("Execution stopped. Please provide the following",
                               " range : \n", variable$val, " : ", variable$type)
           stop(error_msg)
@@ -66,12 +67,14 @@ deepstate_compile_generate_fun <- function(package_path, function_name,
 ##' @title Checks Testharness compilation and execution
 ##' @param package_path path to the testpackage
 ##' @param function_name function name in the package
+##' @param continue_on_missing if set to FALSE, terminates the execution if 
+##' asserts are missing
 ##' @param verbose used to deliver more in depth information
 ##' @description This function compiles and runs the checks test harness.
 ##' The checks test harness contains user defined assertions 
 ##' @export
-deepstate_compile_checks_fun <- function(package_path, function_name, 
-                      verbose=getOption("verbose")){
+deepstate_compile_checks_fun <- function(package_path, function_name,
+                      continue_on_missing=TRUE, verbose=getOption("verbose")){
   test_path <- file.path(package_path, "inst", "testfiles")
   filename <- paste0(function_name, "_DeepState_TestHarness_checks.cpp")
   fun_path <- file.path(test_path, function_name)
@@ -84,8 +87,7 @@ deepstate_compile_checks_fun <- function(package_path, function_name,
       warn_msg <- "No asserts are specified you still want to continue?"
       message(warn_msg)
       
-      response <- readline(prompt="Enter y/n to continue/exit:\n")
-      if(response == 'n') {
+      if(!continue_on_missing) {
         error_msg <- "Execution stopped. Please provide some assertions."
         stop(error_msg)
       }
