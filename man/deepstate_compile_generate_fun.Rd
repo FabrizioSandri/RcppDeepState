@@ -7,6 +7,7 @@
 deepstate_compile_generate_fun(
   package_path,
   function_name,
+  continue_on_missing = TRUE,
   verbose = getOption("verbose")
 )
 }
@@ -14,6 +15,9 @@ deepstate_compile_generate_fun(
 \item{package_path}{path to the tested package}
 
 \item{function_name}{function name in the package}
+
+\item{continue_on_missing}{if set to FALSE, terminates the execution if 
+at leas one range is missing}
 
 \item{verbose}{used to deliver more in depth information}
 }

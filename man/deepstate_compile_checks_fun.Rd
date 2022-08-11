@@ -7,6 +7,7 @@
 deepstate_compile_checks_fun(
   package_path,
   function_name,
+  continue_on_missing = TRUE,
   verbose = getOption("verbose")
 )
 }
@@ -14,6 +15,9 @@ deepstate_compile_checks_fun(
 \item{package_path}{path to the testpackage}
 
 \item{function_name}{function name in the package}
+
+\item{continue_on_missing}{if set to FALSE, terminates the execution if 
+asserts are missing}
 
 \item{verbose}{used to deliver more in depth information}
 }
