@@ -5,9 +5,11 @@
 ##' generating the vectors of user defined size that are created by deepstate 
 ##' and second for writing asserts/checks on the result/generated inputs.
 ##' @export
-deepstate_editable_fun <- function(package_path, function_name){
-  deepstate_fun_create(package_path, function_name, sep="generation")
-  deepstate_fun_create(package_path, function_name, sep="checks")
+deepstate_editable_fun <- function(package_path, function_name) {
+  gen <- deepstate_fun_create(package_path, function_name, sep="generation")
+  chk <- deepstate_fun_create(package_path, function_name, sep="checks")
+  
+  c(gen, chk)
 }
 
 ##' @title Generation test harness compilation and execution
