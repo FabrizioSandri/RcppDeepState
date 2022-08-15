@@ -19,7 +19,7 @@
 deepstate_analyze_fun<-function(package_path, fun_name, max_inputs="all", sep="infun", verbose=getOption("verbose")){
   fun_path <- file.path(package_path,"inst/testfiles",fun_name)
   fun_path <- normalizePath(fun_path, mustWork=TRUE)
-  package_name <- basename(package_path)
+  package_name <- get_package_name(package_name)
   if(file.exists(fun_path)){
     bin.path <- if(sep == "generation" || sep == "checks"){
       file.path( fun_path ,paste0(fun_name,"_output","_",sep))
