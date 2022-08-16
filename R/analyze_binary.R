@@ -68,7 +68,8 @@ inputs.table <- function(inputs.column){
 ##' @param time.limit.seconds duration to run the code
 ##' @param verbose used to deliver more in depth information
 ##' @export
-deepstate_fuzz_fun_analyze<- function(test_function,seed=-1, time.limit.seconds, verbose=getOption("verbose")) {
+deepstate_fuzz_fun_analyze <- function(test_function,seed=-1,time.limit.seconds, 
+                                       verbose=getOption("verbose")) {
   test_function <- normalizePath(test_function,mustWork = TRUE)
   fun_name <- basename(test_function)
   seed_log_analyze <- data.table()
@@ -78,10 +79,12 @@ deepstate_fuzz_fun_analyze<- function(test_function,seed=-1, time.limit.seconds,
     dir.create(output_folder)
   }
   inputs.path <- Sys.glob(file.path(test_function,"inputs/*"))
-  test_harness.cpp <- file.path(test_function, paste0(fun_name, "_DeepState_TestHarness.cpp"))
-  test_harness.o <- file.path(test_function, paste0(fun_name, "_DeepState_TestHarness.o"))
+  test_harness.cpp <- file.path(test_function, paste0(fun_name, 
+                                "_DeepState_TestHarness.cpp"))
+  test_harness.o <- file.path(test_function, paste0(fun_name, 
+                              "_DeepState_TestHarness.o"))
   log_file <- file.path(output_folder,paste0(seed,"_log"))
-  valgrind.log.text <- file.path(output_folder,"seed_valgrind_log_text")
+  valgrind_log <- file.path(output_folder,"valgrind_log_text")
   if(!file.exists(test_harness.o)){
     deepstate_compile_fun(test_function, verbose=verbose)
   }
@@ -98,30 +101,40 @@ deepstate_fuzz_fun_analyze<- function(test_function,seed=-1, time.limit.seconds,
   run.executable <- if(seed == -1 && time.limit.seconds != -1){
     paste0("cd ",test_function," && valgrind --xml=yes --xml-file=",log_file,
            " --tool=memcheck --leak-check=yes --track-origins=yes ",
-           "./",basename(test_function),"_DeepState_TestHarness --timeout=",time.limit.seconds,
-           " --fuzz --input_which_test ",runner_harness_name," > ",valgrind.log.text," 2>&1")
+           "./",basename(test_function),"_DeepState_TestHarness --timeout=",
+           time.limit.seconds, " --fuzz --input_which_test ",
+           runner_harness_name," > ",valgrind_log," 2>&1")
   }else{
     paste0("cd ",test_function," && valgrind --xml=yes --xml-file=",log_file,
            " --tool=memcheck --leak-check=yes --track-origins=yes ",
            "./",basename(test_function),"_DeepState_TestHarness --seed=",seed,
-           " --timeout=",time.limit.seconds," --fuzz --input_which_test ",runner_harness_name,
-           " > ",valgrind.log.text," 2>&1")
+           " --timeout=",time.limit.seconds," --fuzz --input_which_test ",
+           runner_harness_name, " > ",valgrind_log," 2>&1")
   }
   if (verbose){
     message(sprintf("running the executable .. \n%s\n", run.executable))
   }
-  system(run.executable, ignore.stdout=!verbose)
+  exit_code <- system(run.executable, ignore.stdout=!verbose)
+  if (exit_code != 0){
+    error_msg <- paste("The function", fun_name, "has not been analyzed due to",
+                       "some errors while running the test harness. You can",
+                       "find more details inside", valgrind_log)
+    stop(error_msg)
+  }
+
+
   for(inputs.i in seq_along(inputs.path)){
     file.copy(inputs.path[[inputs.i]],output_folder)
     if(grepl(".qs",inputs.path[[inputs.i]],fixed = TRUE)){
-      inputs_list[[gsub(".qs","",basename(inputs.path[[inputs.i]]))]] <- qread(inputs.path[[inputs.i]])
+      inputs_file <- gsub(".qs","",basename(inputs.path[[inputs.i]]))
+      inputs_list[[inputs_file]] <- qread(inputs.path[[inputs.i]])
     }else{
-      inputs_list[[basename(inputs.path[[inputs.i]])]] <-scan(inputs.path[[inputs.i]],quiet = TRUE)
+      inputs_file <- basename(inputs.path[[inputs.i]]
+      inputs_list[[inputs_file]] <-scan(inputs.path[[inputs.i]],quiet = TRUE)
     }
   }
   logtable <- deepstate_read_valgrind_xml(log_file)
-  seed_log_analyze <- data.table(inputs=list(inputs_list),logtable=list(logtable))
-  return(seed_log_analyze)
+  error_table <- data.table(inputs=list(inputs_list),logtable=list(logtable))
 }
 
 
