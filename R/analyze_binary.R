@@ -115,7 +115,9 @@ deepstate_fuzz_fun_analyze <- function(test_function,seed=-1,time.limit.seconds,
     message(sprintf("running the executable .. \n%s\n", run.executable))
   }
   exit_code <- system(run.executable, ignore.stdout=!verbose)
-  if (exit_code != 0){
+  valgrind_log_content <- readLines(valgrind_log)
+  fuzzing_crash <- all(grepl("Starting fuzzing", valgrind_log_content)==FALSE)
+  if (exit_code != 0 && fuzzing_crash){
     error_msg <- paste("The function", fun_name, "has not been analyzed due to",
                        "some errors while running the test harness. You can",
                        "find more details inside", valgrind_log)
@@ -129,7 +131,7 @@ deepstate_fuzz_fun_analyze <- function(test_function,seed=-1,time.limit.seconds,
       inputs_file <- gsub(".qs","",basename(inputs.path[[inputs.i]]))
       inputs_list[[inputs_file]] <- qread(inputs.path[[inputs.i]])
     }else{
-      inputs_file <- basename(inputs.path[[inputs.i]]
+      inputs_file <- basename(inputs.path[[inputs.i]])
       inputs_list[[inputs_file]] <-scan(inputs.path[[inputs.i]],quiet = TRUE)
     }
   }
