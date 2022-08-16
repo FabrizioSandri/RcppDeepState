@@ -1,19 +1,23 @@
 ##' @title Analyze Harness for the Package
 ##' @param path path of the test package to analyze
-##' @param max_inputs maximum number of inputs to run on the executable under valgrind. defaults to all
+##' @param max_inputs maximum number of inputs to run on the executable under 
+##' valgrind. Defaults to all
 ##' @param testfiles number of functions to analyze in the package
 ##' @param verbose used to deliver more in depth information
-##' @description Analyze all the function specific testharness in the package under valgrind.
+##' @description Analyze all the function specific testharness in the package 
+##' under valgrind.
 ##' @examples
 ##' path <- system.file("testpkgs/testSAN", package = "RcppDeepState")
 ##' analyzed.harness <- deepstate_harness_analyze_pkg(path)
 ##' print(analyzed.harness)
-##' @return A list of data tables with inputs, error messages, address trace and line numbers for specified testfiles.
+##' @return A list of data tables with inputs, error messages, address trace and
+##' line numbers for specified testfiles.
 ##' @import methods
 ##' @import Rcpp
 ##' @import qs
 ##' @export
-deepstate_harness_analyze_pkg <- function(path, testfiles="all", max_inputs="all", verbose=getOption("verbose")){
+deepstate_harness_analyze_pkg <- function(path,testfiles="all",max_inputs="all", 
+                                          verbose=getOption("verbose")){
   path <-normalizePath(path, mustWork=TRUE)
   package_name <- sub("/$","",path)
   list_testfiles <- list()
@@ -30,7 +34,9 @@ deepstate_harness_analyze_pkg <- function(path, testfiles="all", max_inputs="all
     }
     for(pkg.i in seq_along(test.files)){
       fun_name <- basename(test.files[[pkg.i]])
-      list_testfiles[[basename(test.files[[pkg.i]])]] <- deepstate_analyze_fun(package_path=path, fun_name=fun_name, max_inputs=max_inputs, verbose=verbose)
+      list_testfiles[[basename(test.files[[pkg.i]])]] <- deepstate_analyze_fun(
+          package_path=path, fun_name=fun_name, max_inputs=max_inputs, 
+          verbose=verbose)
     }
     list_testfiles <- do.call(rbind,list_testfiles)
 
@@ -42,24 +48,6 @@ deepstate_harness_analyze_pkg <- function(path, testfiles="all", max_inputs="all
     
   }
 }
-
-##' @title analyze the binary file 
-##' @param logtable.list logtable  column of result table
-##' @export
-issues.table <- function(logtable.list){
-  logtable.list <- do.call(rbind, logtable.list)
-  logtable.list.unique <-unique(logtable.list, incomparables = FALSE)
-  print(logtable.list.unique)
-}
-##' @title analyze the binary file 
-##' @param inputs.column inputs column of result table
-##' @export
-inputs.table <- function(inputs.column){
-  inputs.list <- do.call(rbind, inputs.column)
-  inputs.list.unique <-unique(inputs.list, incomparables = FALSE)
-  print(inputs.list.unique)
-}
-
 
 
 ##' @title analyze the binary file 

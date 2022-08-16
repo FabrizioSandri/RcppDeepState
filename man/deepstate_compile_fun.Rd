@@ -19,7 +19,7 @@ Compiles the function-specific testharness in the package.
 \examples{
 pkg_path <- file.path("./RcppDeepState/testpkgs/testSAN")
 deepstate_pkg_create(pkg_path)
-path <-  file.path("./RcppDeepState/testpkgs/testSAN/inst/testfiles/rcpp_read_out_of_bound")
+path <- file.path("./RcppDeepState/testpkgs/testSAN/inst/testfiles/rcpp_read_out_of_bound")
 compiled.harness <- deepstate_compile_fun(path)
 print(compiled.harness)
 }

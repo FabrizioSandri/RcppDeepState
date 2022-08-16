@@ -12,10 +12,6 @@
 ##' #fun_name <- "rcpp_read_out_of_bound"
 ##' #analyzed.fun <- deepstate_analyze_fun(package_path,fun_name)
 ##' #print(analyzed.fun)
-##' #to see all the issues that are detected by RcppDeepState
-##' #print(issues.table(analyzed.fun$logtable))
-##' #to see all the inputs that caused the issues
-##' #print(inputs.table(analyzed.fun$inputs))
 ##' @return A data table with inputs, error messages, address trace and line
 ##' numbers
 ##' @export
@@ -60,8 +56,6 @@ deepstate_analyze_fun <- function(package_path, fun_name, max_inputs="all",
 }
 
 
-
-
 ##' @title Analyze Binary file for Harness
 ##' @param package_name name of the package of the harness being analyzed
 ##' @param files.path path to the binary file to analyze
@@ -77,10 +71,6 @@ deepstate_analyze_fun <- function(package_path, fun_name, max_inputs="all",
 ##' print(binary.files[1])
 ##' analyze.result <- deepstate_analyze_file(binary.files[1])
 ##' print(analyze.result)
-##' #to see all the issues that are detected by RcppDeepState
-##' #print(issues.table(analyzed.fun$logtable))
-##' #to see all the inputs that caused the issues
-##' #print(inputs.table(analyzed.fun$inputs))
 ##' @export
 deepstate_analyze_file <- function(package_name, files.path,
                           verbose=getOption("verbose")){
