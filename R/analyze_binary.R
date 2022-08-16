@@ -112,12 +112,12 @@ deepstate_fuzz_fun_analyze <- function(test_function,seed=-1,time_limit,
 
   for(inputs.i in seq_along(inputs.path)){
     file.copy(inputs.path[[inputs.i]],output_folder)
+    input_file <- basename(inputs.path[[inputs.i]])
     if(grepl(".qs",inputs.path[[inputs.i]],fixed = TRUE)){
-      inputs_file <- gsub(".qs","",basename(inputs.path[[inputs.i]]))
-      inputs_list[[inputs_file]] <- qread(inputs.path[[inputs.i]])
+      input_name <- gsub(".qs","",input_file)
+      inputs_list[[input_name]] <- qread(inputs.path[[inputs.i]])
     }else{
-      inputs_file <- basename(inputs.path[[inputs.i]])
-      inputs_list[[inputs_file]] <-scan(inputs.path[[inputs.i]],quiet = TRUE)
+      inputs_list[[input_file]] <- scan(inputs.path[[inputs.i]],quiet = TRUE)
     }
   }
   
