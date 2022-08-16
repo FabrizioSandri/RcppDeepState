@@ -1,10 +1,12 @@
 ##' @title Analyze Harness for the function
 ##' @param package_path path to the test package
 ##' @param fun_name path of the function to compile
-##' @param max_inputs maximum number of inputs to run on the executable under valgrind. defaults to all
+##' @param max_inputs maximum number of inputs to run on the executable under 
+##' valgrind. defaults to all
 ##' @param sep default to infun
 ##' @param verbose used to deliver more in depth information
-##' @description Analyzes the function-specific testharness in the package under valgrind.
+##' @description Analyzes the function-specific testharness in the package under
+##' valgrind.
 ##' @examples
 ##' #package_path <- system.file("testpkgs/testSAN", package = "RcppDeepState")
 ##' #fun_name <- "rcpp_read_out_of_bound"
@@ -14,12 +16,15 @@
 ##' #print(issues.table(analyzed.fun$logtable))
 ##' #to see all the inputs that caused the issues
 ##' #print(inputs.table(analyzed.fun$inputs))
-##' @return A data table with inputs, error messages, address trace and line numbers
+##' @return A data table with inputs, error messages, address trace and line
+##' numbers
 ##' @export
-deepstate_analyze_fun<-function(package_path, fun_name, max_inputs="all", sep="infun", verbose=getOption("verbose")){
+deepstate_analyze_fun <- function(package_path, fun_name, max_inputs="all",
+                                  sep="infun", verbose=getOption("verbose")){
+                                    
   fun_path <- file.path(package_path,"inst/testfiles",fun_name)
   fun_path <- normalizePath(fun_path, mustWork=TRUE)
-  package_name <- basename(package_path)
+  package_name <- get_package_name(package_path)
   if(file.exists(fun_path)){
     bin.path <- if(sep == "generation" || sep == "checks"){
       file.path( fun_path ,paste0(fun_name,"_output","_",sep))
@@ -28,9 +33,11 @@ deepstate_analyze_fun<-function(package_path, fun_name, max_inputs="all", sep="i
     }
     bin.files <- Sys.glob(file.path(bin.path,"*"))
     if(length(bin.files) == 0){
-      return(message(sprintf("No bin files exists for function %s\n", fun_name)))
+      warn_msg <- paste("No bin files exists for function", fun_name)
+      return(message(warn_msg))
     }
-    if(max_inputs != "all" && max_inputs <= length(bin.files) && length(bin.files) > 0){
+    if(max_inputs != "all" && max_inputs <= length(bin.files) && 
+       length(bin.files) > 0){
       bin.files <- bin.files[1:max_inputs]
     }else{
       if(length(bin.files) > 3){ 
@@ -59,8 +66,10 @@ deepstate_analyze_fun<-function(package_path, fun_name, max_inputs="all", sep="i
 ##' @param package_name name of the package of the harness being analyzed
 ##' @param files.path path to the binary file to analyze
 ##' @param verbose used to deliver more in depth information
-##' @description Analyzes the function-specific binary file in the package under valgrind
-##' @return A data table with inputs, error messages, address trace and line numbers
+##' @description Analyzes the function-specific binary file in the package under
+##' valgrind
+##' @return A data table with inputs, error messages, address trace and line 
+##' numbers
 ##' package_path <- system.file("testpkgs/testSAN", package = "RcppDeepState")
 ##' fun_name <- "rcpp_read_out_of_bound"
 ##' binary.dir <- file.path(package_path,"inst/testfiles",fun_name,paste0(fun_name,"_output"))
@@ -73,38 +82,49 @@ deepstate_analyze_fun<-function(package_path, fun_name, max_inputs="all", sep="i
 ##' #to see all the inputs that caused the issues
 ##' #print(inputs.table(analyzed.fun$inputs))
 ##' @export
-deepstate_analyze_file<-function(package_name, files.path, verbose=getOption("verbose")){
+deepstate_analyze_file <- function(package_name, files.path,
+                          verbose=getOption("verbose")){
   inputs_list<- list()
   final_table <- list()
   if(file.exists(files.path)){
     files.path <-normalizePath(files.path, mustWork=TRUE)
-    exec <- paste0("./",gsub("_output","_DeepState_TestHarness",basename(dirname(files.path)))) 
-    output_folder<-file.path(dirname(files.path),paste0("log_",sub('\\..*', '',basename(files.path))))
+    exec <- paste0("./",gsub("_output","_DeepState_TestHarness",
+                   basename(dirname(files.path)))) 
+    output_folder <- file.path(dirname(files.path),paste0("log_",sub('\\..*', 
+                               '', basename(files.path))))
     dir.create(output_folder,showWarnings = FALSE)
     valgrind.log <- file.path(output_folder,"valgrind_log")
     valgrind.log.text <- file.path(output_folder,"valgrind_log_text")
-    analyze_one <- paste0("valgrind --xml=yes --xml-file=",valgrind.log," --tool=memcheck --leak-check=yes ",exec," --input_test_file ",files.path," --input_which_test ",package_name,"_runner > ",valgrind.log.text," 2>&1")
+    analyze_one <- paste0("valgrind --xml=yes --xml-file=",valgrind.log,
+                          " --tool=memcheck --leak-check=yes ", exec, 
+                          " --input_test_file ", files.path, 
+                          " --input_which_test ", package_name, "_runner > ",
+                          valgrind.log.text, " 2>&1")
     var <- paste("cd",dirname(dirname(files.path)),";", analyze_one) 
     if (verbose){
       print(var)
     }
     system(var, ignore.stdout=!verbose)
     inputs.path <- Sys.glob(file.path(dirname(dirname(files.path)),"inputs/*"))
-    logtable <- deepstate_read_valgrind_xml(file.path(output_folder,"valgrind_log"))
+    logtable <- deepstate_read_valgrind_xml(file.path(output_folder,
+                "valgrind_log"))
     for(inputs.i in seq_along(inputs.path)){
       file.copy(inputs.path[[inputs.i]],output_folder)
       if(grepl(".qs",inputs.path[[inputs.i]],fixed = TRUE)){
-        inputs_list[[gsub(".qs","",basename(inputs.path[[inputs.i]]))]] <- qread(inputs.path[[inputs.i]])
+        inputs_file <- gsub(".qs","",basename(inputs.path[[inputs.i]]))
+        inputs_list[[inputs_file]] <- qread(inputs.path[[inputs.i]])
       }else{
-        inputs_list[[basename(inputs.path[[inputs.i]])]] <-scan(inputs.path[[inputs.i]],quiet = TRUE)
+        inputs_file <- basename(inputs.path[[inputs.i]])
+        inputs_list[[inputs_file]] <-scan(inputs.path[[inputs.i]],quiet = TRUE)
       }
     }
-    final_table <- data.table(binaryfile=files.path,inputs=list(inputs_list),logtable=list(logtable))
+    final_table <- data.table(binaryfile=files.path,inputs=list(inputs_list),
+                              logtable=list(logtable))
     
     return(final_table)
-  }
-  else{
-    return(message(sprintf("Provided binary file doesn't exists for %s\n:",files.path)))
+  }else {
+    error_msg <- paste("Provided binary file doesn't exists for", files.path)
+    return(message(error_msg))
   }
 }  
 
