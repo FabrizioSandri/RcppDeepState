@@ -53,16 +53,16 @@ deepstate_harness_analyze_pkg <- function(path,testfiles="all",max_inputs="all",
 ##' @title analyze the binary file 
 ##' @param test_function path of the test function
 ##' @param seed input seed to pass on the executable
-##' @param time.limit.seconds duration to run the code
+##' @param time_limit duration to run the code
 ##' @param verbose used to deliver more in depth information
 ##' @export
-deepstate_fuzz_fun_analyze <- function(test_function,seed=-1,time.limit.seconds, 
+deepstate_fuzz_fun_analyze <- function(test_function,seed=-1,time_limit, 
                                        verbose=getOption("verbose")) {
   test_function <- normalizePath(test_function,mustWork = TRUE)
   fun_name <- basename(test_function)
   seed_log_analyze <- data.table()
   inputs_list<- list()
-  output_folder <- file.path(test_function,paste0(time.limit.seconds,"_",seed))
+  output_folder <- file.path(test_function,paste0(time_limit,"_",seed))
   if(!dir.exists(output_folder)){
     dir.create(output_folder)
   }
@@ -76,8 +76,8 @@ deepstate_fuzz_fun_analyze <- function(test_function,seed=-1,time.limit.seconds,
   if(!file.exists(test_harness.o)){
     deepstate_compile_fun(test_function, verbose=verbose)
   }
-  if(time.limit.seconds <= 0){
-    stop("time.limit.seconds should always be greater than zero")
+  if(time_limit <= 0){
+    stop("time_limit should always be greater than zero")
   }
 
   # get the test name for the runner
@@ -85,26 +85,21 @@ deepstate_fuzz_fun_analyze <- function(test_function,seed=-1,time.limit.seconds,
   runner_line <- harness_file[grepl("^TEST.*runner", harness_file)]
   runner_line_split <- strsplit(runner_line, "[(|)| +|,]")[[1]]
   runner_harness_name <- paste0(runner_line_split[2], "_", runner_line_split[4])
+
+  seed_param <- if(seed != -1) paste0("--seed=", seed) else ""
+  timeout_param <- if(time_limit != -1) paste0("--timeout=", time_limit) else ""
   
-  run.executable <- if(seed == -1 && time.limit.seconds != -1){
-    paste0("cd ",test_function," && valgrind --xml=yes --xml-file=",
-           valgrind_log_xml, " --tool=memcheck --leak-check=yes ",
+  executable_run <- paste0("cd ", test_function, " && valgrind --xml=yes ",
+           "--xml-file=",valgrind_log_xml," --tool=memcheck --leak-check=full ",
            "--track-origins=yes ", "./", basename(test_function),
-           "_DeepState_TestHarness --timeout=", time.limit.seconds, 
-           " --fuzz --input_which_test ", runner_harness_name," > ",
+           "_DeepState_TestHarness ", seed_param, " ", timeout_param,
+           " --fuzz --input_which_test ", runner_harness_name, " > ",
            valgrind_log_txt," 2>&1")
-  }else{
-    paste0("cd ",test_function," && valgrind --xml=yes --xml-file=",
-           valgrind_log_xml, " --tool=memcheck --leak-check=yes ",
-           "--track-origins=yes ", "./",basename(test_function),
-           "_DeepState_TestHarness --seed=",seed, " --timeout=",
-           time.limit.seconds," --fuzz --input_which_test ",
-           runner_harness_name, " > ",valgrind_log_txt," 2>&1")
-  }
+
   if (verbose){
-    message(sprintf("running the executable .. \n%s\n", run.executable))
+    message(sprintf("running the executable .. \n%s\n", executable_run))
   }
-  exit_code <- system(run.executable, ignore.stdout=!verbose)
+  exit_code <- system(executable_run, ignore.stdout=!verbose)
   valgrind_log_content <- readLines(valgrind_log_txt)
   fuzzing_crash <- all(grepl("Starting fuzzing", valgrind_log_content)==FALSE)
   if (exit_code != 0 && fuzzing_crash){
@@ -125,8 +120,9 @@ deepstate_fuzz_fun_analyze <- function(test_function,seed=-1,time.limit.seconds,
       inputs_list[[inputs_file]] <-scan(inputs.path[[inputs.i]],quiet = TRUE)
     }
   }
+  
   logtable <- deepstate_read_valgrind_xml(valgrind_log_xml)
-  error_table <- data.table(inputs=list(inputs_list),logtable=list(logtable))
+  data.table(inputs=list(inputs_list),logtable=list(logtable))
 }
 
 
