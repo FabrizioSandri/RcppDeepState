@@ -137,3 +137,27 @@ test_that("seed output check", {
   expect_identical(seed_analyze_uu$address.msg,"Uninitialised value was created by a stack allocation")
 })
 }
+
+
+test_that("When an error occurs before the test harness execution, it exits with an error message. ", {
+  
+  fun_roob <- file.path(path,"inst","testfiles","rcpp_read_out_of_bound") 
+  exe_roob <- "rcpp_read_out_of_bound_DeepState_TestHarness"
+  
+  if(!dir.exists(fun_roob)){
+    deepstate_fun_create(path, basename(fun_roob))
+  }
+
+  if(!file.exists(exe_roob)){
+    deepstate_compile_fun(fun_roob)
+  }
+
+  # simulate an error before the test harness execution by temporarily deleting
+  # the executable file so that Valgrind won't be able to find it. After the
+  # execution of the test the executable is generated again
+  unlink(file.path(fun_roob,exe_roob),recursive=FALSE)
+  on.exit(deepstate_compile_fun(fun_roob),add=TRUE, after=FALSE)
+
+  expect_error(deepstate_fuzz_fun_analyze(fun_roob,time_limit=3),
+            "The function rcpp_read_out_of_bound has not been analyzed due to")
+})
