@@ -71,8 +71,8 @@ deepstate_get_prototype_calls <-function(package_path){
 get_package_name <- function(package_path){
   description_file <- file.path(package_path, "DESCRIPTION")
   if (!file.exists(description_file)) {
-    message(paste0("ERROR: ", location, " doesn't contain a valid package with",
-                    " a DESCRIPTION file"))
+    message(paste0("ERROR: ", package_path, " doesn't contain a valid package ",
+                    "with a DESCRIPTION file"))
     return(NA_character_)
   }
 
