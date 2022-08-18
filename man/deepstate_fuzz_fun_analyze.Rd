@@ -7,7 +7,7 @@
 deepstate_fuzz_fun_analyze(
   test_function,
   seed = -1,
-  time.limit.seconds,
+  time_limit,
   verbose = getOption("verbose")
 )
 }
@@ -16,7 +16,7 @@ deepstate_fuzz_fun_analyze(
 
 \item{seed}{input seed to pass on the executable}
 
-\item{time.limit.seconds}{duration to run the code}
+\item{time_limit}{duration to run the code}
 
 \item{verbose}{used to deliver more in depth information}
 }

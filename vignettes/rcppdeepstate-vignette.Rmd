@@ -122,10 +122,6 @@ Now that the inputs that are created by deepstate_pkg_compile() or deepstate_fuz
 ```{r}
 analyzed.harness <- deepstate_harness_analyze_pkg(path)
 analyzed.harness
-#gives the logtable datatable
-RcppDeepState::issues.table(analyzed.harness$logtable)
-#gives inputs datatable
-RcppDeepState::inputs.table(analyzed.harness$inputs)
 ```
 
 This function returns a data.table with three columns. The first gives the path to the binary files (.crash/.fail/.pass). The second column gives a list of inputs that are passed to the testharness. The third column has a data.table with a list of error messages.

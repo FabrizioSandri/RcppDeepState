@@ -12,10 +12,6 @@
 ##' #fun_name <- "rcpp_read_out_of_bound"
 ##' #analyzed.fun <- deepstate_analyze_fun(package_path,fun_name)
 ##' #print(analyzed.fun)
-##' #to see all the issues that are detected by RcppDeepState
-##' #print(issues.table(analyzed.fun$logtable))
-##' #to see all the inputs that caused the issues
-##' #print(inputs.table(analyzed.fun$inputs))
 ##' @return A data table with inputs, error messages, address trace and line
 ##' numbers
 ##' @export
@@ -60,8 +56,6 @@ deepstate_analyze_fun <- function(package_path, fun_name, max_inputs="all",
 }
 
 
-
-
 ##' @title Analyze Binary file for Harness
 ##' @param package_name name of the package of the harness being analyzed
 ##' @param files.path path to the binary file to analyze
@@ -77,10 +71,6 @@ deepstate_analyze_fun <- function(package_path, fun_name, max_inputs="all",
 ##' print(binary.files[1])
 ##' analyze.result <- deepstate_analyze_file(binary.files[1])
 ##' print(analyze.result)
-##' #to see all the issues that are detected by RcppDeepState
-##' #print(issues.table(analyzed.fun$logtable))
-##' #to see all the inputs that caused the issues
-##' #print(inputs.table(analyzed.fun$inputs))
 ##' @export
 deepstate_analyze_file <- function(package_name, files.path,
                           verbose=getOption("verbose")){
@@ -93,21 +83,30 @@ deepstate_analyze_file <- function(package_name, files.path,
     output_folder <- file.path(dirname(files.path),paste0("log_",sub('\\..*', 
                                '', basename(files.path))))
     dir.create(output_folder,showWarnings = FALSE)
-    valgrind.log <- file.path(output_folder,"valgrind_log")
-    valgrind.log.text <- file.path(output_folder,"valgrind_log_text")
-    analyze_one <- paste0("valgrind --xml=yes --xml-file=",valgrind.log,
+    valgrind_log_xml <- file.path(output_folder,"valgrind_log")
+    valgrind_log_txt <- file.path(output_folder,"valgrind_log_text")
+    analyze_one <- paste0("valgrind --xml=yes --xml-file=", valgrind_log_xml,
                           " --tool=memcheck --leak-check=yes ", exec, 
                           " --input_test_file ", files.path, 
                           " --input_which_test ", package_name, "_runner > ",
-                          valgrind.log.text, " 2>&1")
-    var <- paste("cd",dirname(dirname(files.path)),";", analyze_one) 
+                          valgrind_log_txt, " 2>&1")
+    executable_run <- paste("cd",dirname(dirname(files.path)),";", analyze_one) 
     if (verbose){
-      print(var)
+      print(executable_run)
     }
-    system(var, ignore.stdout=!verbose)
+    exit_code <- system(executable_run, ignore.stdout=!verbose)
+    valgrind_log_content <- readLines(valgrind_log_txt)
+    fuzzing_crash <- all(grepl("Initialized test input buffer", 
+                               valgrind_log_content)==FALSE)
+    if (exit_code != 0 && fuzzing_crash){
+      error_msg <- paste("The file", files.path, "has not been analyzed due to",
+                      "some errors while running the test harness. You can",
+                      "find more details inside", valgrind_log_txt)
+      stop(error_msg)
+    }
+
     inputs.path <- Sys.glob(file.path(dirname(dirname(files.path)),"inputs/*"))
-    logtable <- deepstate_read_valgrind_xml(file.path(output_folder,
-                "valgrind_log"))
+    logtable <- deepstate_read_valgrind_xml(valgrind_log_xml)
     for(inputs.i in seq_along(inputs.path)){
       file.copy(inputs.path[[inputs.i]],output_folder)
       if(grepl(".qs",inputs.path[[inputs.i]],fixed = TRUE)){
