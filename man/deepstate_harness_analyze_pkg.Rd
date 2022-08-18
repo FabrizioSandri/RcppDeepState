@@ -16,15 +16,18 @@ deepstate_harness_analyze_pkg(
 
 \item{testfiles}{number of functions to analyze in the package}
 
-\item{max_inputs}{maximum number of inputs to run on the executable under valgrind. defaults to all}
+\item{max_inputs}{maximum number of inputs to run on the executable under 
+valgrind. Defaults to all}
 
 \item{verbose}{used to deliver more in depth information}
 }
 \value{
-A list of data tables with inputs, error messages, address trace and line numbers for specified testfiles.
+A list of data tables with inputs, error messages, address trace and
+line numbers for specified testfiles.
 }
 \description{
-Analyze all the function specific testharness in the package under valgrind.
+Analyze all the function specific testharness in the package 
+under valgrind.
 }
 \examples{
 path <- system.file("testpkgs/testSAN", package = "RcppDeepState")

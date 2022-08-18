@@ -6,26 +6,32 @@
 ##' @examples
 ##' pkg_path <- file.path("./RcppDeepState/testpkgs/testSAN")
 ##' deepstate_pkg_create(pkg_path)
-##' path <-  file.path("./RcppDeepState/testpkgs/testSAN/inst/testfiles/rcpp_read_out_of_bound")
+##' path <- file.path("./RcppDeepState/testpkgs/testSAN/inst/testfiles/rcpp_read_out_of_bound")
 ##' compiled.harness <- deepstate_compile_fun(path)
 ##' print(compiled.harness)
 ##' @export
-deepstate_compile_fun<-function(fun_path, sep="infun", verbose=getOption("verbose")){
+deepstate_compile_fun <- function(fun_path, sep="infun",
+                                  verbose=getOption("verbose")){
 
   silent <- if (!verbose) "-s" else ""
 
   if(sep == "infun"){
-    harness.file <- file.path(fun_path,paste0(basename(fun_path),"_DeepState_TestHarness.cpp"))
+    harness.file <- file.path(fun_path,paste0(basename(fun_path),
+                              "_DeepState_TestHarness.cpp"))
     make.file <- file.path(fun_path,"Makefile")
     compile_line <-paste0("cd ",fun_path," && rm -f *.o && make ", silent, "\n")
   }else if(sep == "generation"){
-    harness.file <- file.path(fun_path,paste0(basename(fun_path),"_DeepState_TestHarness_generation.cpp"))
+    harness.file <- file.path(fun_path,paste0(basename(fun_path),
+                              "_DeepState_TestHarness_generation.cpp"))
     make.file <- file.path(fun_path,"generation.Makefile")
-    compile_line <-paste0("cd ",fun_path," && rm -f *.o && make ", silent, " -f generation.Makefile\n")
+    compile_line <-paste0("cd ",fun_path," && rm -f *.o && make ", silent,
+                          " -f generation.Makefile\n")
   }else if(sep == "checks"){
-    harness.file <- file.path(fun_path,paste0(basename(fun_path),"_DeepState_TestHarness_checks.cpp"))
+    harness.file <- file.path(fun_path,paste0(basename(fun_path),
+                              "_DeepState_TestHarness_checks.cpp"))
     make.file <- file.path(fun_path,"checks.Makefile")
-    compile_line <-paste0("cd ",fun_path," && rm -f *.o && make ", silent, " -f checks.Makefile\n")
+    compile_line <-paste0("cd ",fun_path," && rm -f *.o && make ", silent, 
+                          " -f checks.Makefile\n")
   }
 
   if(file.exists(harness.file) && file.exists(make.file)){
@@ -36,7 +42,9 @@ deepstate_compile_fun<-function(fun_path, sep="infun", verbose=getOption("verbos
     system(compile_line, ignore.stdout=!verbose)
 
   }else{
-    stop("TestHarness and makefile doesn't exists. Please use deepstate_pkg_create() to create them")
+    error_msg <- paste("TestHarness and makefile doesn't exists. Please use",
+                       "deepstate_pkg_create() to create them")
+    stop(error_msg)
   }
   
 }
