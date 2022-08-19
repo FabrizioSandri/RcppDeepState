@@ -12,7 +12,7 @@ deepstate_editable_fun(package_path, function_name)
 \item{function_name}{function name in the package}
 }
 \description{
-This function creates two different testharness one for generating the vectors of 
-user defined size that are creatd by deepstate and second for writing asserts/checks 
-on the result/generated inputs.
+This function creates two different testharness one for 
+generating the vectors of user defined size that are created by deepstate 
+and second for writing asserts/checks on the result/generated inputs.
 }
