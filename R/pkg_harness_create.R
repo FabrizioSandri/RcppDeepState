@@ -38,13 +38,12 @@ deepstate_pkg_create <- function(package_path, verbose=getOption("verbose")) {
     # ensure that the debugging symbols are embedded in the shared object
     makevars_file <- file.path(package_path, "src", "Makevars")
     if (dir.exists(file.path(package_path, "src"))) {
-        makevars_content <- "PKG_CXXFLAGS += -g "
-        write(makevars_content, makevars_file, append=FALSE)
+        makevars_content <- "PKG_CXXFLAGS += -g \n"
+        write(makevars_content, makevars_file, append=TRUE)
     }
 
     system(paste0("R CMD INSTALL ", package_path), intern=FALSE,
            ignore.stdout=!verbose, ignore.stderr=!verbose)
-    unlink(makevars_file, recursive = FALSE)
   }
 
   # download and build deepstate
