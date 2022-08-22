@@ -38,7 +38,7 @@ deepstate_pkg_create <- function(package_path, verbose=getOption("verbose")) {
     # ensure that the debugging symbols are embedded in the shared object
     makevars_file <- file.path(package_path, "src", "Makevars")
     if (dir.exists(file.path(package_path, "src"))) {
-        makevars_content <- "PKG_CXXFLAGS += -g "
+        makevars_content <- "PKG_CXXFLAGS += -g \n"
         write(makevars_content, makevars_file, append=TRUE)
     }
 
