@@ -39,7 +39,7 @@ deepstate_pkg_create <- function(package_path, verbose=getOption("verbose")) {
     makevars_file <- file.path(package_path, "src", "Makevars")
     if (dir.exists(file.path(package_path, "src"))) {
         makevars_content <- "PKG_CXXFLAGS += -g "
-        write(makevars_content, makevars_file, append=FALSE)
+        write(makevars_content, makevars_file, append=TRUE)
     }
 
     system(paste0("R CMD INSTALL ", package_path), intern=FALSE,
