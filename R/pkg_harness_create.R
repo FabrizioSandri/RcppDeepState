@@ -44,7 +44,6 @@ deepstate_pkg_create <- function(package_path, verbose=getOption("verbose")) {
 
     system(paste0("R CMD INSTALL ", package_path), intern=FALSE,
            ignore.stdout=!verbose, ignore.stderr=!verbose)
-    unlink(makevars_file, recursive = FALSE)
   }
 
   # download and build deepstate
