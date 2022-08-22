@@ -181,13 +181,13 @@ deepstate_fun_create <- function(package_path, function_name, sep="infun"){
     print_values <- paste0(print_values, indent, 'std::cout << "', arg.name,
                            ' values: " << ', arg.name, ' << std::endl; \\\n')    
     
-    proto_args <- gsub(" ", "", paste0(proto_args, arg.name))
     if (type.arg == "string"){
-      proto_args <- paste0("Rcpp::as<std::string>(", proto_args, "[0]),")
+      proto_args <- paste0(proto_args, "Rcpp::as<std::string>(", arg.name, 
+                           "[0]),")
     }else if(!is.na(types_table[type.arg]$rtype)){
-      proto_args <- paste0(proto_args, "[0],")
+      proto_args <- paste0(proto_args, arg.name, "[0],")
     }else{
-      proto_args <- paste0(proto_args, ",")  
+      proto_args <- paste0(proto_args, arg.name, ",")  
     }
 
   }
