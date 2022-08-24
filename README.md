@@ -7,8 +7,10 @@ RcppDeepState, a simple way to fuzz test compiled code in Rcpp packages. This pa
 **Note:** RcppDeepState is currently supported on Linux and macOS, with windows support in progress.
 
 ## See Also
-
-@akhikolla's [RcppDeepState blog](https://akhikolla.github.io./) and @FabrizioSandri's [GSOC 2022 blog](https://fabriziosandri.github.io/gsoc-2022-blog/) to know more about the working of RcppDeepState. 
+To learn more about how RcppDeepState works see: 
+* @akhikolla's [RcppDeepState blog](https://akhikolla.github.io./) 
+* @FabrizioSandri's [GSOC 2022 blog](https://fabriziosandri.github.io/gsoc-2022-blog/) 
+* [Wiki](https://github.com/FabrizioSandri/RcppDeepState/wiki) page
 
 ## Dependencies
 
@@ -111,12 +113,13 @@ For example, when we run the function rcpp_write_index_outofbound:
 
 ```
 
-Now RcppDeepState makes it easy to use RcppDeepState on Travis-CI. 
+Now RcppDeepState makes it easy to use RcppDeepState with GitHub Actions. 
 
-**deepstate_ci_setup**: This function edits your .travis.yml file or creates one if it doesn't exist with the necessary packages and environment variables and now push your updated code to GitHub and check the Travis build for the test package for results.
+**ci_setup**: this function can be used to automatically initialize a GitHub 
+workflow file inside your repository for the RcppDeepState analysis. This 
+workflow uses [RcppDeepState-action](https://github.com/FabrizioSandri/RcppDeepState-action).
 
 ```R
-RcppDeepState::deepstate_ci_setup(pathtotestpackage)
+RcppDeepState::ci_setup(pathtotestpackage)
 ```
-
 
