@@ -86,5 +86,5 @@ indent <- function(times=1){
 # Helper function that generates a string representing a yaml formatted code of
 # a given parameter
 get_param_yaml <- function(param_name, param){
-  paste0(indent(5), param_name, ": '", param, "'")
+  paste0(indent(5), param_name, ": ", param)
 }
