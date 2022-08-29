@@ -80,6 +80,7 @@ deepstate_create_makefile <-function(package,fun_name){
     dir.create(inputs_path)
   }
 
+  # install the package in order to install with its dependencies from CRAN
   install.packages(setdiff(basename(package), rownames(installed.packages())),
                            repos = "http://cran.us.r-project.org")
   
