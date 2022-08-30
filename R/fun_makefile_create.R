@@ -59,10 +59,23 @@ deepstate_create_makefile <-function(package,fun_name){
   dir.create(file.path(fun_path, paste0(fun_name,"_output")), showWarnings=FALSE, recursive=TRUE)
   file.create(makefile_path, recursive=TRUE)
 
-  obj.file.list <- Sys.glob(file.path(package,"src/*.so"))
+  obj.file.list <- Sys.glob(file.path(package, "src/*.so"))
   if(length(obj.file.list) <= 0){
-    stop("Missing package shared object file.")
+    # try to generate the shared object before failing
+    makevars_file <- file.path(package, "src", "Makevars")
+    if (dir.exists(file.path(package, "src"))) {
+      makevars_content <- "PKG_CXXFLAGS += -g \n"
+      write(makevars_content, makevars_file, append=TRUE)
+    }
+
+    system(paste0("R CMD INSTALL ", package), intern=FALSE)
+    
+    if (!file.exists(file.path(package, "src/*.so"))) {
+      stop("Missing package shared object file.")
+    }
+    
   }
+
  
   # Makefile rules : compile lines
   write_to_file<-paste0(write_to_file, "\n\n", test_harness_path, " : ", test_harness.o_path)
