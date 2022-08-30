@@ -50,7 +50,7 @@ ci_setup <- function(repository="./", workflow_file_name="RcppDeepState.yaml",
   fail_ci_param <- get_param_yaml("fail_ci_if_error", tolower(fail_ci_if_error))
   location_param <- get_param_yaml("location", location)
   seed_param <- get_param_yaml("seed", seed)
-  time_limit_param <- get_param_yaml("time_limit", time_limit)
+  time_limit_param <- get_param_yaml("max_seconds_per_function", time_limit)
   max_inputs_param <- get_param_yaml("max_inputs", max_inputs)
   comment_param <- get_param_yaml("comment", tolower(comment))
   verbose_param <- get_param_yaml("verbose", tolower(verbose))
@@ -86,5 +86,5 @@ indent <- function(times=1){
 # Helper function that generates a string representing a yaml formatted code of
 # a given parameter
 get_param_yaml <- function(param_name, param){
-  paste0(indent(5), param_name, ": '", param, "'")
+  paste0(indent(5), param_name, ": ", param)
 }
