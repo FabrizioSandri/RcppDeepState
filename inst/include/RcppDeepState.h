@@ -173,6 +173,56 @@ Rcpp::NumericMatrix RcppDeepState_NumericMatrix(int row,int column,int low,int h
   return rand_numericmatrix;
 }
 
+//default IntegerMatrix generation
+Rcpp::IntegerMatrix RcppDeepState_IntegerMatrix(){
+  int missing_values[] = {DeepState_Int(),NA_INTEGER};
+  
+  int rows = DeepState_IntInRange(1,10);
+  int columns = DeepState_IntInRange(1,10);
+  Rcpp::IntegerMatrix rand_integermatrix(rows,columns);
+  OneOf(
+    [&] {
+      for(int i = 0 ; i < rows*columns ; i++){
+        rand_integermatrix[i] = DeepState_IntInRange(0,100);
+      }
+    },
+    [&] {
+      for(int i = 0 ; i < rows*columns ; i++){
+        rand_integermatrix[i] = DeepState_IntInRange(0,100);
+      }
+      for(int i = 0 ; i < 5 ; i++){
+        rand_integermatrix[DeepState_IntInRange(0,rows*columns-1)] = OneOf(missing_values);
+      }
+    });
+  
+  return rand_integermatrix;
+}
+
+//inclusive range IntegerMatrix generation
+Rcpp::IntegerMatrix RcppDeepState_IntegerMatrix(int row,int column,int low,int high){
+  int missing_values[] = {DeepState_Int(),NA_INTEGER};
+  int rows = row;
+  int columns = column;
+  Rcpp::IntegerMatrix rand_integermatrix(rows,columns);
+  OneOf(
+    [&] {
+      for(int i = 0 ; i < rows*columns ; i++){
+        rand_integermatrix[i] = DeepState_IntInRange(low,high);
+      }
+    },
+    [&] {
+      for(int i = 0 ; i < rows*columns ; i++){
+        rand_integermatrix[i] = DeepState_IntInRange(low,high);
+      }
+      for(int i = 0 ; i < 5 ; i++){
+        rand_integermatrix[DeepState_IntInRange(0,rows*columns-1)] = OneOf(missing_values);
+      }
+    });
+  
+  
+  return rand_integermatrix;
+}
+
 //default CharacterVector generation
 Rcpp::CharacterVector RcppDeepState_CharacterVector(){
   int size = DeepState_IntInRange(0,100);
