@@ -38,6 +38,7 @@ deepstate_fun_create <- function(package_path, function_name, sep="infun"){
     datatype("NumericVector", NA, "(size,low,high)"),
     datatype("IntegerVector", NA, "(size,low,high)"),
     datatype("NumericMatrix", NA, "(size,low,high)"),
+    datatype("IntegerMatrix", NA, "(size,low,high)"),
     datatype("CharacterVector", NA, NA),
     datatype("mat", NA, NA))
   setkey(types_table, "ctype")
