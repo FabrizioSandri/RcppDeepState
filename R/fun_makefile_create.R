@@ -60,15 +60,13 @@ deepstate_create_makefile <-function(package,fun_name){
   file.create(makefile_path, recursive=TRUE)
 
   obj.file.list <- Sys.glob(file.path(package,"src/*.so"))
-  obj.file.path <- obj.file.list
   if(length(obj.file.list) <= 0){
-    obj.file.path<-file.path(package,"src/*.cpp")  
+    stop("Missing package shared object file.")
   }
-  objs.add <- file.path(package,paste0("src/", fun_name, ".o"))
  
   # Makefile rules : compile lines
   write_to_file<-paste0(write_to_file, "\n\n", test_harness_path, " : ", test_harness.o_path)
-  write_to_file<-paste0(write_to_file, "\n\t", "clang++ -g -gdwarf-4 ", test_harness.o_path, " ${CPPFLAGS} ", " ${LDFLAGS} ", " ${LDLIBS} ", obj.file.path, " -o ", test_harness_path) #," ",objs.add)
+  write_to_file<-paste0(write_to_file, "\n\t", "clang++ -g -gdwarf-4 ", test_harness.o_path, " ${CPPFLAGS} ", " ${LDFLAGS} ", " ${LDLIBS} ", obj.file.list, " -o ", test_harness_path) 
   write_to_file<-paste0(write_to_file, "\n\n", test_harness.o_path, " : ", test_harness.cpp_path)
   write_to_file<-paste0(write_to_file, "\n\t", "clang++ -g -gdwarf-4 -c ", " ${CPPFLAGS} ", test_harness.cpp_path, " -o ", test_harness.o_path)
   
