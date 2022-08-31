@@ -70,7 +70,7 @@ deepstate_create_makefile <-function(package,fun_name){
 
     system(paste0("R CMD INSTALL ", package), intern=FALSE)
     
-    if (!file.exists(file.path(package, "src/*.so"))) {
+    if (length(Sys.glob(file.path(package, "src/*.so"))) <= 0) {
       stop("Missing package shared object file.")
     }
     

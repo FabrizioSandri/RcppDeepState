@@ -34,7 +34,7 @@ deepstate_pkg_create <- function(package_path, verbose=getOption("verbose")) {
     }
   }
 
-  if (!file.exists(file.path(package_path, "src/*.so"))) {
+  if (length(Sys.glob(file.path(package_path, "src/*.so"))) <= 0) {
     # ensure that the debugging symbols are embedded in the shared object
     makevars_file <- file.path(package_path, "src", "Makevars")
     if (dir.exists(file.path(package_path, "src"))) {
