@@ -61,18 +61,16 @@ deepstate_create_makefile <-function(package,fun_name){
     # ensure that the debugging symbols are embedded in the shared object
     makevars_file <- file.path(package, "src", "Makevars")
     if (dir.exists(file.path(package, "src"))) {
-        makevars_content <- "PKG_CXXFLAGS += -g \n"
-        write(makevars_content, makevars_file, append=TRUE)
+      makevars_content <- "PKG_CXXFLAGS += -g \n"
+      write(makevars_content, makevars_file, append=TRUE)
     }
 
     utils::install.packages(package, repo=NULL)
 
     if (length(Sys.glob(shared_objects)) <= 0) {
-      error_msg <- paste("ERROR: the shared object for your package cannot be",
-                         "generated. This is probably caused by a missing",
-                         "dependency. Please install all the dependencies for",
-                         "your package.")
-      stop(error_msg)
+      stop("ERROR: the shared object for your package cannot be generated.",
+           "This is probably caused by a missing dependency. Please install",
+           "all the dependencies for your package.")
     }
   }
  
