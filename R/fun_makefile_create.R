@@ -22,7 +22,6 @@ deepstate_create_makefile <-function(package,fun_name){
   path_home <-paste0("R_HOME=",R.home())
   path_include <-paste0("R_INCLUDE=",R.home("include"))
   path_lib <-paste0("R_LIB=",R.home("lib"))
-  write_to_file <- paste0(path_home,"\n",path_include,"\n",path_lib,"\n\n")
   
   # include and lib path locations
   rcpp_include <- system.file("include", package="RcppDeepState")
@@ -36,29 +35,27 @@ deepstate_create_makefile <-function(package,fun_name){
   rinside_lib <- system.file("lib", package="RInside")
 
   # CPPFLAGS : headers inclusion
-  compiler_cppflags <- paste0("-I", rcpp_include) 
-  compiler_cppflags <- paste(compiler_cppflags, paste0("-I", rcppdeepstate_include)) 
-  compiler_cppflags <- paste(compiler_cppflags, paste0("-I", rcpparmadillo_include)) 
-  compiler_cppflags <- paste(compiler_cppflags, paste0("-I", rinside_include)) 
-  compiler_cppflags <- paste(compiler_cppflags, paste0("-I", deepstate_build))
-  compiler_cppflags <- paste(compiler_cppflags, paste0("-I", deepstate_include)) 
-  compiler_cppflags <- paste(compiler_cppflags, paste0("-I", qs_include)) 
-  compiler_cppflags <- paste(compiler_cppflags, paste0("-I", "${R_INCLUDE}"))
-  write_to_file <- paste0(write_to_file, "CPPFLAGS=",compiler_cppflags, "\n")
+  cppflags <- c(rcpp_include, rcppdeepstate_include, rcpparmadillo_include,
+                rinside_include, deepstate_build, deepstate_include, qs_include,
+                "${R_INCLUDE}")
+
+  compiler_cppflags <- paste(cppflags, collapse=" -I ")
+  cppflags_write <- paste0("CPPFLAGS=-I",compiler_cppflags)
 
   # LDFLAGS : libs inclusion
-  compiler_ldflags <- paste0("-L", rinside_lib, " -Wl,-rpath=", rinside_lib) 
-  compiler_ldflags <- paste(compiler_ldflags, "-L${R_LIB} -Wl,-rpath=${R_LIB}")
-  compiler_ldflags <- paste(compiler_ldflags, paste0("-L", deepstate_build, " -Wl,-rpath=", deepstate_build))
-  write_to_file <- paste0(write_to_file, "LDFLAGS=", compiler_ldflags, "\n")
+  ldflag <- function(path) paste0("-L", path, " -Wl,-rpath=", path) 
+  ldflags <- c(ldflag(rinside_lib), ldflag("${R_LIB}"), ldflag(deepstate_build))
+
+  compiler_ldflags <- paste(ldflags, collapse=" ")
+  ldflags_write <- paste0("LDFLAGS=", compiler_ldflags)
 
   # LDLIBS : library flags for the linker
-  compiler_ldlibs <- paste("-lR", "-lRInside", "-ldeepstate")
-  write_to_file <- paste0(write_to_file, "LDLIBS=",compiler_ldlibs, "\n\n")
+  ldlibs <- c("-lR", "-lRInside", "-ldeepstate")
+  compiler_ldlibs <- paste(ldlibs, collapse=" ")
 
-  dir.create(file.path(fun_path, paste0(fun_name,"_output")), showWarnings=FALSE, recursive=TRUE)
-  file.create(makefile_path, recursive=TRUE)
+  ldlibs_write <- paste0("LDLIBS=", compiler_ldlibs)
 
+  # generate the shared object file for the library
   shared_objects <- file.path(package, "src/*.so")  
   if (length(Sys.glob(shared_objects)) <= 0) {
     # ensure that the debugging symbols are embedded in the shared object
@@ -80,17 +77,31 @@ deepstate_create_makefile <-function(package,fun_name){
   }
  
   # Makefile rules : compile lines
-  write_to_file<-paste0(write_to_file, "\n\n", test_harness_path, " : ", test_harness.o_path)
-  write_to_file<-paste0(write_to_file, "\n\t", "clang++ -g -gdwarf-4 ", test_harness.o_path, " ${CPPFLAGS} ", " ${LDFLAGS} ", " ${LDLIBS} ", shared_objects, " -o ", test_harness_path) 
-  write_to_file<-paste0(write_to_file, "\n\n", test_harness.o_path, " : ", test_harness.cpp_path)
-  write_to_file<-paste0(write_to_file, "\n\t", "clang++ -g -gdwarf-4 -c ", " ${CPPFLAGS} ", test_harness.cpp_path, " -o ", test_harness.o_path)
-  
-  write(write_to_file, makefile_path, append=TRUE)
+  gen_rule <- function(targets, prerequisites, recipe) paste0(targets, " : ", 
+                        prerequisites, "\n\t", recipe, "\n")
+  obj <- paste0("clang++ -g -gdwarf-4 -c ", " ${CPPFLAGS} ", 
+                test_harness.cpp_path, " -o ", test_harness.o_path)
+  obj_rule <- gen_rule(test_harness.o_path, test_harness.cpp_path, obj)
 
-  # create the inputs folder
+  exe <- paste0("clang++ -g -gdwarf-4 ", test_harness.o_path, " ${CPPFLAGS} ", 
+                " ${LDFLAGS} ", " ${LDLIBS} ", shared_objects, " -o ", 
+                test_harness_path) 
+  exe_rule <- gen_rule(test_harness_path, test_harness.o_path, exe)
+  
+  # create the inputs, outputs folder and save the makefile
+  dir.create(file.path(fun_path, paste0(fun_name,"_output")), 
+             showWarnings=FALSE, recursive=TRUE)
+  
   inputs_path <- file.path(fun_path, "inputs")
   if(!dir.exists(inputs_path)){
     dir.create(inputs_path)
   }
+
+  write_to_file <- paste(path_home, path_include, path_lib, "\n", 
+                         cppflags_write, ldflags_write, ldlibs_write, "\n", 
+                         exe_rule, obj_rule, sep="\n")
+
+  file.create(makefile_path, recursive=TRUE)
+  write(write_to_file, makefile_path, append=FALSE)
   
 }
