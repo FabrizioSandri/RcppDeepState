@@ -34,18 +34,6 @@ deepstate_pkg_create <- function(package_path, verbose=getOption("verbose")) {
     }
   }
 
-  if (length(Sys.glob(file.path(package_path, "src/*.so"))) <= 0) {
-    # ensure that the debugging symbols are embedded in the shared object
-    makevars_file <- file.path(package_path, "src", "Makevars")
-    if (dir.exists(file.path(package_path, "src"))) {
-        makevars_content <- "PKG_CXXFLAGS += -g \n"
-        write(makevars_content, makevars_file, append=TRUE)
-    }
-
-    system(paste0("R CMD INSTALL ", package_path), intern=FALSE,
-           ignore.stdout=!verbose, ignore.stderr=!verbose)
-  }
-
   # download and build deepstate
   libdeepstate32 <- "~/.RcppDeepState/deepstate-master/build/libdeepstate32.a"
   libdeepstate <- "~/.RcppDeepState/deepstate-master/build/libdeepstate.a"

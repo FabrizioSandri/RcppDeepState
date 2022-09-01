@@ -2,6 +2,7 @@
 ##' @param package path to the test package
 ##' @param fun_name name of the function
 ##' @description This function generates makefile for the provided function specific TestHarness
+##' @import utils
 ##' @export
 deepstate_create_makefile <-function(package,fun_name){
   
@@ -59,27 +60,29 @@ deepstate_create_makefile <-function(package,fun_name){
   dir.create(file.path(fun_path, paste0(fun_name,"_output")), showWarnings=FALSE, recursive=TRUE)
   file.create(makefile_path, recursive=TRUE)
 
-  obj.file.list <- Sys.glob(file.path(package, "src/*.so"))
-  if(length(obj.file.list) <= 0){
-    # try to generate the shared object before failing
+  shared_objects <- file.path(package, "src/*.so")  
+  if (length(Sys.glob(shared_objects)) <= 0) {
+    # ensure that the debugging symbols are embedded in the shared object
     makevars_file <- file.path(package, "src", "Makevars")
     if (dir.exists(file.path(package, "src"))) {
-      makevars_content <- "PKG_CXXFLAGS += -g \n"
-      write(makevars_content, makevars_file, append=TRUE)
+        makevars_content <- "PKG_CXXFLAGS += -g \n"
+        write(makevars_content, makevars_file, append=TRUE)
     }
 
-    system(paste0("R CMD INSTALL ", package), intern=FALSE)
-    
-    if (length(Sys.glob(file.path(package, "src/*.so"))) <= 0) {
-      stop("Missing package shared object file.")
+    install.packages(package, repo=NULL)
+
+    if (length(Sys.glob(shared_objects)) <= 0) {
+      error_msg <- paste("ERROR: the shared object for your package cannot be",
+                         "generated. This is probably caused by a missing",
+                         "dependency. Please install all the dependencies for",
+                         "your package.")
+      stop(error_msg)
     }
-    
   }
-
  
   # Makefile rules : compile lines
   write_to_file<-paste0(write_to_file, "\n\n", test_harness_path, " : ", test_harness.o_path)
-  write_to_file<-paste0(write_to_file, "\n\t", "clang++ -g -gdwarf-4 ", test_harness.o_path, " ${CPPFLAGS} ", " ${LDFLAGS} ", " ${LDLIBS} ", obj.file.list, " -o ", test_harness_path) 
+  write_to_file<-paste0(write_to_file, "\n\t", "clang++ -g -gdwarf-4 ", test_harness.o_path, " ${CPPFLAGS} ", " ${LDFLAGS} ", " ${LDLIBS} ", shared_objects, " -o ", test_harness_path) 
   write_to_file<-paste0(write_to_file, "\n\n", test_harness.o_path, " : ", test_harness.cpp_path)
   write_to_file<-paste0(write_to_file, "\n\t", "clang++ -g -gdwarf-4 -c ", " ${CPPFLAGS} ", test_harness.cpp_path, " -o ", test_harness.o_path)
   
