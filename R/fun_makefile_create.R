@@ -40,8 +40,8 @@ deepstate_create_makefile <-function(package,fun_name){
                 rinside_include, deepstate_build, deepstate_include, qs_include,
                 "${R_INCLUDE}")
 
-  compiler_cppflags <- paste(cppflags, collapse=" -I ")
-  cppflags_write <- paste0("CPPFLAGS=-I",compiler_cppflags)
+  compiler_cppflags <- paste(paste0("-I",cppflags), collapse=" ")
+  cppflags_write <- paste0("CPPFLAGS=",compiler_cppflags)
 
   # LDFLAGS : libs inclusion
   ldflag <- function(path) paste0("-L", path, " -Wl,-rpath=", path) 
