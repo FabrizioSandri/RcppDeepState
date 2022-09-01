@@ -2,7 +2,6 @@
 ##' @param package path to the test package
 ##' @param fun_name name of the function
 ##' @description This function generates makefile for the provided function specific TestHarness
-##' @import utils
 ##' @export
 deepstate_create_makefile <-function(package,fun_name){
   
@@ -69,7 +68,7 @@ deepstate_create_makefile <-function(package,fun_name){
         write(makevars_content, makevars_file, append=TRUE)
     }
 
-    install.packages(package, repo=NULL)
+    utils::install.packages(package, repo=NULL)
 
     if (length(Sys.glob(shared_objects)) <= 0) {
       error_msg <- paste("ERROR: the shared object for your package cannot be",
