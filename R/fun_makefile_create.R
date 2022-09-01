@@ -68,9 +68,9 @@ deepstate_create_makefile <-function(package,fun_name){
     utils::install.packages(package, repo=NULL)
 
     if (length(Sys.glob(shared_objects)) <= 0) {
-      stop("ERROR: the shared object for your package cannot be generated.",
-           "This is probably caused by a missing dependency. Please install",
-           "all the dependencies for your package.")
+      stop("The shared object for your package cannot be generated. This is ",
+           "probably caused by a missing dependency. Please install all the ",
+           "dependencies for your package.")
     }
   }
  
