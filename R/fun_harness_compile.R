@@ -4,10 +4,10 @@
 ##' @param verbose used to deliver more in depth information
 ##' @description Compiles the function-specific testharness in the package.
 ##' @examples
-##' pkg_path <- file.path("./RcppDeepState/testpkgs/testSAN")
+##' pkg_path <- system.file("testpkgs/testSAN", package = "RcppDeepState")
 ##' deepstate_pkg_create(pkg_path)
-##' path <- file.path("./RcppDeepState/testpkgs/testSAN/inst/testfiles/rcpp_read_out_of_bound")
-##' compiled.harness <- deepstate_compile_fun(path)
+##' fun_path <- file.path(pkg_path, "inst", "testfiles", "rcpp_read_out_of_bound")
+##' compiled.harness <- deepstate_compile_fun(fun_path)
 ##' print(compiled.harness)
 ##' @export
 deepstate_compile_fun <- function(fun_path, sep="infun",
