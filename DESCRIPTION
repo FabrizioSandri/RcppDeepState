@@ -1,12 +1,12 @@
 Package: RcppDeepState
 Type: Package
-Title: What the Package Does in One 'Title Case' Line
-Version: 1.0
-Date: 2020-06-02
-Author: Your Name
-Maintainer: Your Name <your@email.com>
-Description: One paragraph description of what the package does as one or more full
-         sentences.
+Title: A simple way to fuzz test code in Rcpp packages
+Version: 2.0
+Author: Akhila Chowdary
+Description: An implementation of an advanced fuzz testing tool to find subtle bugs
+  in Rcpp packages. RcppDeepState combines the advantages of both DeepState and
+  Valgrind to obtain a sophisticated tool that checks for errors inside the Rcpp 
+  code.
 License: GPL (>= 2)
 Imports: RcppArmadillo,RInside,data.table,Rcpp,methods,qs,nc,xml2
 Suggests: testthat,
