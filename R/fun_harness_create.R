@@ -40,7 +40,8 @@ deepstate_fun_create <- function(package_path, function_name, sep="infun"){
     datatype("NumericMatrix", NA, "(row,column,low,high)"),
     datatype("IntegerMatrix", NA, "(row,column,low,high)"),
     datatype("CharacterVector", NA, NA),
-    datatype("mat", NA, NA))
+    datatype("mat", NA, NA)),
+    datatype("float", "NumericVector", NA)
   setkey(types_table, "ctype")
 
   headers <- paste("#include <fstream>", "#include <RInside.h>", 
