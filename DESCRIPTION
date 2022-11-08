@@ -3,6 +3,7 @@ Type: Package
 Title: A simple way to fuzz test code in Rcpp packages
 Version: 2.0
 Author: Akhila Chowdary
+Maintainer: Fabrizio Sandri  <sandri.fabr@gmail.com>
 Description: An implementation of an advanced fuzz testing tool to find subtle bugs
   in Rcpp packages. RcppDeepState combines the advantages of both DeepState and
   Valgrind to obtain a sophisticated tool that checks for errors inside the Rcpp 
