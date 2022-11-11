@@ -262,5 +262,17 @@ arma::mat RcppDeepState_mat(){
   return rand_mat;
 }
 
+//default float generation
+float RcppDeepState_float(){
+ float rand_value = DeepState_Float();
+ return rand_value;
+}
+
+//default float generation in range
+float RcppDeepState_float(float low, float high){
+    float rand_value = DeepState_FloatInRange(low, high);
+    return rand_value;
+}
+
 #endif
 
