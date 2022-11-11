@@ -268,5 +268,11 @@ float RcppDeepState_float(){
  return rand_value;
 }
 
+//default float generation in range
+float RcppDeepState_float(float min, float max){
+    float rand_value = DeepState_FloatInRange(min, max);
+    return rand_value;
+}
+
 #endif
 
