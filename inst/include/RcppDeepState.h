@@ -274,5 +274,11 @@ float RcppDeepState_float(float low, float high){
     return rand_value;
 }
 
+//default character generation
+char RcppDeepState_char(){
+  char random_value = DeepState_Char();  
+  return random_value;  
+}
+
 #endif
 
